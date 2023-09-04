@@ -6,33 +6,37 @@ using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
-    public int extraJumps = 2;
-    public float movementSpeed;
-    public float jumpForce;
 
     public Rigidbody2D rb;
     public Playerinput playerMovement;
     public Playerinput jumpScript;
     //public Animator animator;
 
-    private int jumpsLeft;
-    private float jumpGravity = 2f;
-    private float normalGravity = 5f;
-    private bool isFacingRight = true;
-
     private InputAction move;
     private InputAction jump;
 
+
+    public float movementSpeed;
+    public float jumpForce;
+    public int extraJumps;
+
+
+    private int jumpsLeft;
+    private bool isFacingRight = true;
+
+
+    [SerializeField] private float normalCharGravity;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
-    // Start is called before the first frame update
     private void Start()
     {
         jumpsLeft = extraJumps;
-        //rb.gravityScale = normalGravity;
+        rb.gravityScale *= normalCharGravity ;
 
     }
+
+    #region necessary input system calls
     private void Awake()
     {
         playerMovement = new();
@@ -52,44 +56,59 @@ public class Movement : MonoBehaviour
         move.Disable();
         jump.Disable();
     }
+
+#endregion
     void Update()
     {
         Flip();
-        //animator.SetBool("isJumping", !IsGrounded());
 
+        Jump();
+        //animator.SetBool("isJumping", !IsGrounded());
 
         //if (IsGrounded() && jumpsLeft != extraJumps)
         //{
         //    jumpsLeft = extraJumps; 
         //    animator.SetBool("isJumping",false);
         //}
-
-        if (jumpsLeft > 0 && jump.WasPressedThisFrame())
-        {
-            //animator.SetBool("isJumping", true);
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            rb.gravityScale = jumpGravity;
-            --jumpsLeft;
-        }
-
-        if (jump.WasReleasedThisFrame() && !IsGrounded())
-            rb.gravityScale = normalGravity;
-
     }
+
 
     private void LateUpdate()
     {
-        if (IsGrounded() && jumpsLeft != extraJumps)
-        {
-            jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded() && jumpsLeft != extraJumps);
-        }
+        JumpReset();
     }
+
     private void FixedUpdate()
+    {
+        PlayerMovement();
+    }
+
+    private void PlayerMovement()
     {
         Vector2 direction = move.ReadValue<Vector2>();
 
         rb.velocity = new Vector2(movementSpeed * direction.x, rb.velocity.y);
         //animator.SetFloat("Speed", math.abs(rb.velocity.x));
+    }
+    private void Jump()
+    {
+        if (jumpsLeft > 0 && jump.WasPressedThisFrame())
+        {
+            //animator.SetBool("isJumping", true);
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            rb.gravityScale /= 2;
+            --jumpsLeft;
+        }
+
+        if (jump.WasReleasedThisFrame())
+            rb.gravityScale = normalCharGravity;
+    }
+    private void JumpReset()
+    {
+        if (IsGrounded() && jumpsLeft != extraJumps)
+        {
+            jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded() && jumpsLeft != extraJumps);
+        }
     }
     private bool IsGrounded()
     {
