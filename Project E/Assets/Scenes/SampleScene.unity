@@ -287,12 +287,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 478611612}
-  movementSpeed: 9
-  jumpForce: 7.5
+  movementSpeed: 15
+  jumpForce: 10
   extraJumps: 1
-  dashSpeed: 20
-  dashTime: 0.1
-  dashGravity: 3
+  extraDashs: 1
+  dashSpeed: 25
+  dashTime: 0.15
+  dashGravity: 0.5
   normalCharGravity: 4
   groundCheck: {fileID: 1498693380}
   groundLayer:
@@ -340,19 +341,7 @@ MonoBehaviour:
     m_ActionId: 171c7138-ed15-45f8-ae05-68c910ec7fa4
     m_ActionName: Player/Jump[/Keyboard/space]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 478611616}
-        m_TargetAssemblyTypeName: Movement, Assembly-CSharp
-        m_MethodName: Dash
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 55f01c93-d80e-49fa-b840-9e2cfb28d6f7
     m_ActionName: Player/Dash[/Keyboard/leftShift]
   - m_PersistentCalls:
