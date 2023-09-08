@@ -80,6 +80,8 @@ public class Movement : MonoBehaviour
         Jump();
         StartCoroutine(Dash());
 
+
+
         /*        animator.SetBool("isJumping", !IsGrounded());
 
         if (IsGrounded() && jumpsLeft != extraJumps)
@@ -96,33 +98,39 @@ public class Movement : MonoBehaviour
 
     private void LateUpdate()
     {
-        MovementReset();
+        if (IsGrounded())
+        {
+            JumpReset();
+            DashReset();
+        }
     }
 
     private void PlayerMovement()
     {
         if (!isDashing)
         {
-            Vector2 direction = move.ReadValue<Vector2>();
-
-            rb.velocity = new Vector2(currentSpeed * direction.x, rb.velocity.y);
+            rb.velocity = new Vector2(currentSpeed * playerInput().x, rb.velocity.y);
             //animator.SetFloat("Speed", math.abs(rb.velocity.x));
         }
     }
 
-
+    Vector2 playerInput() 
+    {
+        return move.ReadValue<Vector2>();
+    }
+      
     IEnumerator Dash()
     {
         if (dash.WasPressedThisFrame() && (!isDashing) && dashsLeft!=0)
         {
-            Vector2 direction = move.ReadValue<Vector2>();
+            //Vector2 direction = move.ReadValue<Vector2>();
             //Vector2 storing = rb.velocity;
             
             isDashing = true;
             dashsLeft--;
 
             rb.gravityScale = dashGravity;
-            rb.velocity = (direction != Vector2.zero ) ? new Vector2(dashSpeed * direction.x, dashSpeed * direction.y* 0.6f):
+            rb.velocity = (playerInput() != Vector2.zero ) ? new Vector2(dashSpeed * playerInput().x, dashSpeed * playerInput().y* 0.6f):
                           (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0);
 
             yield return new WaitForSecondsRealtime(dashTime);
@@ -147,28 +155,27 @@ public class Movement : MonoBehaviour
             rb.gravityScale = normalCharGravity;
     }
 
-    private void MovementReset()
+    void DashReset()
     {
-        if (IsGrounded())
-        {
-            if (!isDashing && dashsLeft != extraDashs)
-            {
-                dashsLeft = extraDashs * Convert.ToInt32(IsGrounded() && dashsLeft != extraDashs);
-            }
+        if (!isDashing && dashsLeft != extraDashs)
+            dashsLeft = extraDashs * Convert.ToInt32(IsGrounded() && dashsLeft != extraDashs);
 
-            if (jumpsLeft != extraJumps)
-                jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded() && jumpsLeft != extraJumps);
-        }
+    }
+
+    void JumpReset()
+    {
+        if (jumpsLeft != extraJumps)
+            jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded() && jumpsLeft != extraJumps);
     }
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f,groundLayer);
     }
 
     private void Flip()
     {
-        float movementSpeed = move.ReadValue<Vector2>().x;
+        float movementSpeed = playerInput().x;
         if (isFacingRight && movementSpeed < 0f || !isFacingRight && movementSpeed > 0f)
         {
             isFacingRight = !isFacingRight;
