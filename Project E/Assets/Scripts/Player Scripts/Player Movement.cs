@@ -29,8 +29,8 @@ public class Movement : MonoBehaviour
     public float dashTime;
     public float dashGravity;
     public float vertDashDamp;
-
-    private float currentSpeed;
+    public float stickySpeed;
+    public float currentSpeed;
     private int jumpsLeft;
     private bool isFacingRight = true;
     private bool isDashing = false;
@@ -113,6 +113,7 @@ public class Movement : MonoBehaviour
             rb.velocity = new Vector2(currentSpeed * playerInput().x, rb.velocity.y);
             //animator.SetFloat("Speed", math.abs(rb.velocity.x));
         }
+
     }
 
     Vector2 playerInput() 
@@ -183,6 +184,21 @@ public class Movement : MonoBehaviour
             Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
             transform.localScale = localScale;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+
+        if (collision.gameObject.tag == "Sticky platform")
+        {
+            currentSpeed = stickySpeed;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Sticky platform")
+        {
+            currentSpeed = movementSpeed;
         }
     }
 }
