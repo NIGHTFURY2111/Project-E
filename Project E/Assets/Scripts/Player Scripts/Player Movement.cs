@@ -28,6 +28,7 @@ public class Movement : MonoBehaviour
     public float dashSpeed;
     public float dashTime;
     public float dashGravity;
+    public float vertDashDamp;
 
     private float currentSpeed;
     private int jumpsLeft;
@@ -130,8 +131,8 @@ public class Movement : MonoBehaviour
             dashsLeft--;
 
             rb.gravityScale = dashGravity;
-            rb.velocity = (playerInput() != Vector2.zero ) ? new Vector2(dashSpeed * playerInput().x, dashSpeed * playerInput().y* 0.6f):
-                          (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0);
+            rb.AddForce ( (playerInput() != Vector2.zero ) ? new Vector2(dashSpeed * playerInput().x, dashSpeed * playerInput().y*vertDashDamp):
+                          (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0));
 
             yield return new WaitForSecondsRealtime(dashTime);
             

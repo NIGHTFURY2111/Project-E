@@ -385,12 +385,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   movementSpeed: 15
-  jumpForce: 10
+  jumpForce: 15
   extraJumps: 1
   extraDashs: 1
-  dashSpeed: 25
+  dashSpeed: 1500
   dashTime: 0.15
   dashGravity: 0.5
+  vertDashDamp: 0.55
 --- !u!114 &478611617
 MonoBehaviour:
   m_ObjectHideFlags: 0
