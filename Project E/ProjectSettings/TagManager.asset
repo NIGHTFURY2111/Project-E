@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ground
   - Sticky platform
+  - Slippery platform
   layers:
   - Default
   - TransparentFX

@@ -35,6 +35,8 @@ public class Movement : MonoBehaviour
     private bool isFacingRight = true;
     private bool isDashing = false;
     private int dashsLeft;
+    //[SerializeField] private string collidedWith;
+    [SerializeField] private float slipMultiplier;
 
 
 
@@ -81,8 +83,6 @@ public class Movement : MonoBehaviour
         Jump();
         StartCoroutine(Dash());
 
-
-
         /*        animator.SetBool("isJumping", !IsGrounded());
 
         if (IsGrounded() && jumpsLeft != extraJumps)
@@ -110,13 +110,24 @@ public class Movement : MonoBehaviour
     {
         if (!isDashing)
         {
-            rb.velocity = new Vector2(currentSpeed * playerInput().x, rb.velocity.y);
+            if (IsGrounded("Slippery platform"))
+            {
+                rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
+            }
+            else if(IsGrounded("Sticky platform"))
+            {
+                rb.velocity = new Vector2(stickySpeed * PlayerInput().x, rb.velocity.y);
+            }
+            else if(IsGrounded())
+            {
+                rb.velocity =  new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
+            }
             //animator.SetFloat("Speed", math.abs(rb.velocity.x));
         }
 
     }
 
-    Vector2 playerInput() 
+    Vector2 PlayerInput()
     {
         return move.ReadValue<Vector2>();
     }
@@ -132,7 +143,7 @@ public class Movement : MonoBehaviour
             dashsLeft--;
 
             rb.gravityScale = dashGravity;
-            rb.AddForce ( (playerInput() != Vector2.zero ) ? new Vector2(dashSpeed * playerInput().x, dashSpeed * playerInput().y*vertDashDamp):
+            rb.AddForce ( (PlayerInput() != Vector2.zero ) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y*vertDashDamp):
                           (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0));
 
             yield return new WaitForSecondsRealtime(dashTime);
@@ -170,14 +181,24 @@ public class Movement : MonoBehaviour
             jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded() && jumpsLeft != extraJumps);
     }
 
-    private bool IsGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f,groundLayer);
-    }
 
+    bool IsGrounded( string testAgainst = "ground")
+    {
+
+        Collider2D collidingWith = /*Physics2D.OverlapBox(transform.position, new Vector2(transform.localScale.x + 1f, 1f), 0f, groundLayer);*/
+        Physics2D.OverlapCircle(groundCheck.position, 1f, groundLayer);
+        if (collidingWith)
+        return (testAgainst == "ground") ? collidingWith : collidingWith.CompareTag(testAgainst);
+        else return false;
+        //if (testAgainst == "ground")
+        //    return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+
+        //else
+
+    }
     private void Flip()
     {
-        float movementSpeed = playerInput().x;
+        float movementSpeed = PlayerInput().x;
         if (isFacingRight && movementSpeed < 0f || !isFacingRight && movementSpeed > 0f)
         {
             isFacingRight = !isFacingRight;
@@ -186,19 +207,21 @@ public class Movement : MonoBehaviour
             transform.localScale = localScale;
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
 
-        if (collision.gameObject.tag == "Sticky platform")
-        {
-            currentSpeed = stickySpeed;
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Sticky platform")
-        {
-            currentSpeed = movementSpeed;
-        }
-    }
+
+    //    if (collision.gameObject.tag == "Sticky platform")
+    //    {
+    //        currentSpeed = stickySpeed;
+    //    }
+    //}
+    //private void OnTriggerExit2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.tag == "Sticky platform")
+    //    {
+    //        currentSpeed = movementSpeed;
+    //    }
+
+    //}
 }
