@@ -35,6 +35,7 @@ public class Movement : MonoBehaviour
     private bool isFacingRight = true;
     private bool isDashing = false;
     private int dashsLeft;
+    private string lastPlatformTouched;
     //[SerializeField] private string collidedWith;
     [SerializeField] private float slipMultiplier;
 
@@ -43,7 +44,7 @@ public class Movement : MonoBehaviour
     private void Start()
     {
         jumpsLeft = extraJumps;
-        rb.gravityScale *= normalCharGravity ;
+        rb.gravityScale *= normalCharGravity;
         currentSpeed = movementSpeed;
 
     }
@@ -109,19 +110,32 @@ public class Movement : MonoBehaviour
     private void PlayerMovement()
     {
         if (!isDashing)
-        {
-            if (IsGrounded("Slippery platform"))
+        {// Changed If-else conditions to switch cases
+
+
+            switch (lastPlatformTouched)
             {
-                rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
+                case "Slippery platform": rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
+                    break;
+
+                case "Sticky platform": rb.velocity = new Vector2(stickySpeed * PlayerInput().x, rb.velocity.y);
+                    break;
+                
+                default: rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
+                    break;
             }
-            else if(IsGrounded("Sticky platform"))
-            {
-                rb.velocity = new Vector2(stickySpeed * PlayerInput().x, rb.velocity.y);
-            }
-            else if(IsGrounded())
-            {
-                rb.velocity =  new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
-            }
+            //if (IsGrounded("Slippery platform"))
+            //{
+            //    rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
+            //}
+            //else if(IsGrounded("Sticky platform"))
+            //{
+            //    rb.velocity = new Vector2(stickySpeed * PlayerInput().x, rb.velocity.y);
+            //}
+            //else /*if(IsGrounded())*/
+            //{
+            //    rb.velocity =  new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
+            //}
             //animator.SetFloat("Speed", math.abs(rb.velocity.x));
         }
 
@@ -141,16 +155,17 @@ public class Movement : MonoBehaviour
             
             isDashing = true;
             dashsLeft--;
-
+            rb.velocity = Vector2.zero;
             rb.gravityScale = dashGravity;
-            rb.AddForce ( (PlayerInput() != Vector2.zero ) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y*vertDashDamp):
-                          (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0));
+            rb.velocity = (PlayerInput() != Vector2.zero ) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y*vertDashDamp):
+                          (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0);
 
             yield return new WaitForSecondsRealtime(dashTime);
             
             rb.gravityScale = normalCharGravity;
-            //rb.velocity = new Vector2( rb.velocity.x, 0);
+            /*rb.velocity =  Vector2.zeronew Vector2( rb.velocity.x, 0)*/;
             isDashing = false;
+            lastPlatformTouched = "ground";
         }
     }
 
@@ -171,30 +186,28 @@ public class Movement : MonoBehaviour
     void DashReset()
     {
         if (!isDashing && dashsLeft != extraDashs)
-            dashsLeft = extraDashs * Convert.ToInt32(IsGrounded() && dashsLeft != extraDashs);
+            dashsLeft = extraDashs * Convert.ToInt32(IsGrounded()/* && dashsLeft != extraDashs*/);
 
     }
 
     void JumpReset()
     {
         if (jumpsLeft != extraJumps)
-            jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded() && jumpsLeft != extraJumps);
+            jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded()/* && jumpsLeft != extraJumps*/);
     }
 
 
     bool IsGrounded( string testAgainst = "ground")
     {
+        Collider2D collidingWith = Physics2D.OverlapCircle(groundCheck.position, 0.3f, groundLayer);
 
-        Collider2D collidingWith = /*Physics2D.OverlapBox(transform.position, new Vector2(transform.localScale.x + 1f, 1f), 0f, groundLayer);*/
-        Physics2D.OverlapCircle(groundCheck.position, 1f, groundLayer);
         if (collidingWith)
-        return (testAgainst == "ground") ? collidingWith : collidingWith.CompareTag(testAgainst);
-        else return false;
-        //if (testAgainst == "ground")
-        //    return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+            lastPlatformTouched = collidingWith.gameObject.tag;
 
-        //else
-
+        if (testAgainst == "ground")
+            return collidingWith;
+        else
+            return lastPlatformTouched == testAgainst;
     }
     private void Flip()
     {
