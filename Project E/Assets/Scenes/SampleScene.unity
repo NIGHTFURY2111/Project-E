@@ -425,16 +425,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 478611612}
-  normalCharGravity: 4
+  normalCharGravity: 9
   groundCheck: {fileID: 1498693380}
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
   movementSpeed: 15
-  jumpForce: 15
+  jumpForce: 16
   extraJumps: 1
   extraDashs: 1
-  dashSpeed: 1500
+  dashSpeed: 50
   dashTime: 0.15
   dashGravity: 0.5
   vertDashDamp: 0.55
@@ -747,7 +747,7 @@ Transform:
   m_GameObject: {fileID: 657876222}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -2.57, z: 0}
-  m_LocalScale: {x: 368.3, y: 0.6625, z: 1}
+  m_LocalScale: {x: 3.6283924e+10, y: 0.6625, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

@@ -19,7 +19,7 @@ public class falling_object : MonoBehaviour
     }
     private IEnumerator fall()
     {
-        yield return new WaitForSeconds(waittime);
+        yield return new WaitForSecondsRealtime(waittime);
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = gravityScale; 
     }
