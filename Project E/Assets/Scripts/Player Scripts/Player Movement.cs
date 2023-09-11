@@ -83,6 +83,7 @@ public class Movement : MonoBehaviour
         Flip();
         Jump();
         StartCoroutine(Dash());
+        //if (IsGrounded()) Debug.Log("grounded");
 
         /*        animator.SetBool("isJumping", !IsGrounded());
 
