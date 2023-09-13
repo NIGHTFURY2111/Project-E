@@ -9,10 +9,12 @@ public class falling_object : MonoBehaviour
     [SerializeField] private float gravityScale;
     [SerializeField] private float waittime;
     [SerializeField] private LayerMask player;
+    [SerializeField] private GameObject[] rayCasts;
     private void FixedUpdate()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 50f,player);
-        if (hit.collider != null)
+        RaycastHit2D hit = Physics2D.Raycast(rayCasts[1].transform.position, Vector2.down, 50f,player);
+        RaycastHit2D hit1 = Physics2D.Raycast(rayCasts[0].transform.position, Vector2.down, 50f, player);
+        if (hit.collider != null||hit1.collider != null)
         {
             StartCoroutine(fall());
         }

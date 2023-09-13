@@ -964,6 +964,37 @@ Transform:
   m_Father: {fileID: 1391327552}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1070250667
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1070250668}
+  m_Layer: 0
+  m_Name: raycast 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1070250668
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070250667}
+  m_LocalRotation: {x: 0, y: -0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.499, y: 0.5, z: 7.199809}
+  m_LocalScale: {x: 0.10593282, y: -0.24268511, z: 0.99127674}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1976013353}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1301291162
 GameObject:
   m_ObjectHideFlags: 0
@@ -1363,6 +1394,42 @@ Transform:
   m_Father: {fileID: 478611615}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1600606060
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1600606061}
+  m_Layer: 0
+  m_Name: raycast2
+  m_TagString: Untagged
+  m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1600606061
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600606060}
+  m_LocalRotation: {x: 0, y: -0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.499, y: 0.5, z: 7.199809}
+  m_LocalScale: {x: 0.10593282, y: -0.24268511, z: 0.99127674}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1976013353}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1976013353 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4646863381567983132, guid: d78586ba8022d434384837a303be4391, type: 3}
+  m_PrefabInstance: {fileID: 1214961265393563111}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &497324634372457949
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1480,13 +1547,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4946853733883234612, guid: d78586ba8022d434384837a303be4391, type: 3}
+      propertyPath: rayCasts.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946853733883234612, guid: d78586ba8022d434384837a303be4391, type: 3}
+      propertyPath: rayCasts.Array.data[0]
+      value: 
+      objectReference: {fileID: 1070250667}
+    - target: {fileID: 4946853733883234612, guid: d78586ba8022d434384837a303be4391, type: 3}
+      propertyPath: rayCasts.Array.data[1]
+      value: 
+      objectReference: {fileID: 1600606060}
     - target: {fileID: 5553933426910172777, guid: d78586ba8022d434384837a303be4391, type: 3}
       propertyPath: m_Name
       value: falling platform
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4646863381567983132, guid: d78586ba8022d434384837a303be4391, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1070250668}
+    - targetCorrespondingSourceObject: {fileID: 4646863381567983132, guid: d78586ba8022d434384837a303be4391, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1600606061}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d78586ba8022d434384837a303be4391, type: 3}
 --- !u!1001 &5123720798478990727
