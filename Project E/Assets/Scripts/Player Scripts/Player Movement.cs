@@ -20,6 +20,8 @@ public class Movement : MonoBehaviour
     [SerializeField] private float normalCharGravity;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float slipMultiplier;
+    //[SerializeField] private string collidedWith;
 
     public float movementSpeed;
     public float jumpForce;
@@ -36,8 +38,10 @@ public class Movement : MonoBehaviour
     private bool isDashing = false;
     private int dashsLeft;
     private string lastPlatformTouched;
-    //[SerializeField] private string collidedWith;
-    [SerializeField] private float slipMultiplier;
+    //private bool isTouchingWall = false;
+   
+
+
 
 
 
@@ -125,7 +129,8 @@ public class Movement : MonoBehaviour
                 default: rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
                     break;
             }
-            //if (IsGrounded("Slippery platform"))
+            //if (isTouchingWall&&)
+                //if (IsGrounded("Slippery platform"))
             //{
             //    rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
             //}
@@ -221,6 +226,10 @@ public class Movement : MonoBehaviour
             transform.localScale = localScale;
         }
     }
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(groundCheck.position, 0.3f);
+    }
     //private void OnTriggerEnter2D(Collider2D collision)
     //{
 
@@ -238,4 +247,5 @@ public class Movement : MonoBehaviour
     //    }
 
     //}
-}
+
+}   

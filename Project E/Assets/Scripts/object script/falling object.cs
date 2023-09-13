@@ -9,14 +9,18 @@ public class falling_object : MonoBehaviour
     [SerializeField] private float gravityScale;
     [SerializeField] private float waittime;
     [SerializeField] private LayerMask player;
-    [SerializeField] private GameObject[] rayCasts;
+    [SerializeField] private Transform rayCasts;
+    [SerializeField] private float raylenght;
     private void FixedUpdate()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(rayCasts[1].transform.position, Vector2.down, 50f,player);
-        RaycastHit2D hit1 = Physics2D.Raycast(rayCasts[0].transform.position, Vector2.down, 50f, player);
-        if (hit.collider != null||hit1.collider != null)
+    {  
+        RaycastHit2D hit = Physics2D.BoxCast(rayCasts.position,transform.localScale,0f,Vector2.down,raylenght,player);
+       
+       
+        if (hit.collider != null/*||hit1.collider != null*/)
         {
             StartCoroutine(fall());
+
+            
         }
     }
     private IEnumerator fall()
@@ -24,5 +28,10 @@ public class falling_object : MonoBehaviour
         yield return new WaitForSecondsRealtime(waittime);
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = gravityScale; 
+    }
+    private void OnDrawGizmos()
+    {
+
+        Gizmos.DrawCube(new Vector3(rayCasts.position.x,rayCasts.position.y-raylenght,rayCasts.position.z), transform.localScale);
     }
 }
