@@ -163,6 +163,7 @@ public class Movement : MonoBehaviour
             dashsLeft--;
             rb.velocity = Vector2.zero;
             rb.gravityScale = dashGravity;
+            yield return new WaitForSecondsRealtime(0.05f);
             rb.velocity = (PlayerInput() != Vector2.zero ) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y*vertDashDamp):
                           (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0);
 
