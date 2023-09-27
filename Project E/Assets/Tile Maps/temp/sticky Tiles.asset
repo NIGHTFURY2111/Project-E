@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: sticky Tiles
   m_EditorClassIdentifier: 
-  m_DefaultSprite: {fileID: 0}
-  m_DefaultGameObject: {fileID: 0}
+  m_DefaultSprite: {fileID: -1205559926547503184, guid: 1c12b46224ca7a34ab5907ce5aa82c01, type: 3}
+  m_DefaultGameObject: {fileID: 3491718484111549872, guid: 82bc2cc18096a40469d7865ae6932f0a, type: 3}
   m_DefaultColliderType: 1
   m_TilingRules: []
