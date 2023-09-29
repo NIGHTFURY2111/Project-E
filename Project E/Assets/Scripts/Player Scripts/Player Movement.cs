@@ -11,15 +11,21 @@ public class Movement : MonoBehaviour
     public Playerinput playerMovement;
     public Playerinput jumpScript;
     public Playerinput dashScript;
+    public Playerinput grabScript;
     //public Animator animator;
 
     private InputAction move;
     private InputAction jump;
     private InputAction dash;
+    private InputAction grab;
+
 
     [SerializeField] private float normalCharGravity;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+
+    [SerializeField] private Transform wallCheck;
+
     [SerializeField] private float slipMultiplier;
     //[SerializeField] private string collidedWith;
 
@@ -30,6 +36,7 @@ public class Movement : MonoBehaviour
     public float dashSpeed;
     public float dashTime;
     public float dashGravity;
+    public float grabGravity;
     public float vertDashDamp;
     public float stickySpeed;
     public float currentSpeed;
@@ -59,6 +66,7 @@ public class Movement : MonoBehaviour
         playerMovement = new();
         jumpScript = new();
         dashScript = new();
+        grabScript = new();
     }
     private void OnEnable()
     {
@@ -70,6 +78,11 @@ public class Movement : MonoBehaviour
 
         dash = dashScript.Player.Dash;
         dash.Enable();
+
+        grab = grabScript.Player.Grab;
+        grab.Enable();
+
+
     }
 
 
@@ -78,6 +91,7 @@ public class Movement : MonoBehaviour
         move.Disable();
         jump.Disable();
         dash.Disable();
+        grab.Disable();
     }
 
 #endregion
@@ -85,6 +99,7 @@ public class Movement : MonoBehaviour
     void Update()
     {
         Flip();
+        Grabbing();
         Jump();
         StartCoroutine(Dash());
         //if (IsGrounded()) Debug.Log("grounded");
@@ -216,6 +231,24 @@ public class Movement : MonoBehaviour
         else
             return lastPlatformTouched == testAgainst;
     }
+
+    void Grabbing()
+    {
+       Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, groundLayer);
+       if (grab.WasPressedThisFrame())
+       {
+            if (collidingWith)
+            {
+                rb.velocity = Vector3.zero;
+                rb.gravityScale = grabGravity;
+            }
+       }
+        else if (grab.WasReleasedThisFrame() || !collidingWith)
+        {
+            rb.gravityScale = normalCharGravity;
+        }
+
+    }
     private void Flip()
     {
         float movementSpeed = PlayerInput().x;
@@ -227,6 +260,8 @@ public class Movement : MonoBehaviour
             transform.localScale = localScale;
         }
     }
+
+
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(groundCheck.position, 0.3f);
