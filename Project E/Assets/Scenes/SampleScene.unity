@@ -363,6 +363,7 @@ GameObject:
   - component: {fileID: 478611612}
   - component: {fileID: 478611617}
   - component: {fileID: 478611616}
+  - component: {fileID: 478611618}
   m_Layer: 6
   m_Name: player
   m_TagString: Player
@@ -518,6 +519,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
+  wallCheck: {fileID: 0}
   slipMultiplier: 2.5
   movementSpeed: 15
   jumpForce: 16
@@ -526,6 +528,7 @@ MonoBehaviour:
   dashSpeed: 50
   dashTime: 0.15
   dashGravity: 0.5
+  grabGravity: 0
   vertDashDamp: 0.55
   stickySpeed: 5
   currentSpeed: 0
@@ -619,6 +622,19 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &478611618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478611611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 744c5ab5af5effc40b4404067f7eaced, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  threshold: -10
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
