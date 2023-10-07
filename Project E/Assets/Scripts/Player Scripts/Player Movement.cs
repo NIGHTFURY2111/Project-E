@@ -12,14 +12,20 @@ public class Movement : MonoBehaviour
     public Playerinput playerMovement;
     public Playerinput jumpScript;
     public Playerinput dashScript;
+<<<<<<< HEAD
+=======
     public Playerinput grabScript;
+<<<<<<< Updated upstream
+=======
+>>>>>>> 5bb20c742c4577e39e65b3b820a891e3858104ff
+>>>>>>> Stashed changes
     
     //public Animator animator;
     
     private InputAction move;
     private InputAction jump;
     private InputAction dash;
-    private InputAction grab;
+    
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
@@ -36,10 +42,23 @@ public class Movement : MonoBehaviour
     [Header("Dash Settings")]
     public int extraDashs;
     public float dashSpeed;
+<<<<<<< Updated upstream
     public float dashTime;
     public float dashGravity;
+=======
+    public float wallJumpSpeed;
+    public float dashTime;
+    public float wallJumpTime;
+    public float dashGravity;
+<<<<<<< HEAD
+    //public float slideGravity;
+=======
+>>>>>>> 5bb20c742c4577e39e65b3b820a891e3858104ff
+>>>>>>> Stashed changes
     public float vertDashDamp;
     private bool isDashing = false;
+    private bool isSliding = false;
+    private bool isWallJumping = false;
     private int dashsLeft;
     
     
@@ -71,7 +90,7 @@ public class Movement : MonoBehaviour
     private void Start()
     {
         jumpsLeft = extraJumps;
-        rb.gravityScale *= normalCharGravity;
+        rb.gravityScale = normalCharGravity;
         currentSpeed = movementSpeed;
         lastRespawnPoint = RespawnPoint.transform.position;
 
@@ -83,7 +102,7 @@ public class Movement : MonoBehaviour
         playerMovement = new();
         jumpScript = new();
         dashScript = new();
-        grabScript = new();
+        
     }
     private void OnEnable()
     {
@@ -96,8 +115,7 @@ public class Movement : MonoBehaviour
         dash = dashScript.Player.Dash;
         dash.Enable();
 
-        grab = grabScript.Player.Grab;
-        grab.Enable();
+       
 
 
     }
@@ -108,7 +126,7 @@ public class Movement : MonoBehaviour
         move.Disable();
         jump.Disable();
         dash.Disable();
-        grab.Disable();
+       
     }
 
 #endregion
@@ -117,12 +135,26 @@ public class Movement : MonoBehaviour
     {
 
         Flip();
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        Sliding();
+        StartCoroutine(Jump());
+        StartCoroutine(Dash());
+        
+        
+=======
+>>>>>>> Stashed changes
         WallJump();
         Grabbing();
         Jump();
         StartCoroutine(Dash());
         if (transform.position.y < threshold)
             Respawn();
+<<<<<<< Updated upstream
+=======
+>>>>>>> 5bb20c742c4577e39e65b3b820a891e3858104ff
+>>>>>>> Stashed changes
         //if (IsGrounded()) Debug.Log("grounded");
 
         /*        animator.SetBool("isJumping", !IsGrounded());
@@ -157,12 +189,12 @@ public class Movement : MonoBehaviour
 
     private void PlayerMovement()
     {
-        if (!isDashing)
+        if (!(isDashing || isWallJumping||isSliding))
         {// Changed If-else conditions to switch cases
 
-
+            
             switch (lastPlatformTouched)
-            {
+            {   
                 case "Slippery platform": rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
                     break;
 
@@ -219,7 +251,26 @@ public class Movement : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
     private void WallJump()
+    {
+        if (isGrabing && jumpsLeft > 0 && jump.WasPressedThisFrame())
+        {
+            rb.velocity = new Vector2(-transform.localScale.x * movementSpeed*100, jumpForce);
+            rb.gravityScale /= 2;
+            --jumpsLeft;
+        }
+        if (jump.WasReleasedThisFrame())
+            rb.gravityScale = normalCharGravity;
+    }
+    private void Jump()
+=======
+<<<<<<< HEAD
+    IEnumerator Jump()
+    {   if (isSliding && !IsGrounded()) 
+=======
+    private void WallJump()
+>>>>>>> Stashed changes
     {
         if (isGrabing && jumpsLeft > 0 && jump.WasPressedThisFrame())
         {
@@ -233,15 +284,52 @@ public class Movement : MonoBehaviour
     private void Jump()
     {
         if (jumpsLeft > 0 && jump.WasPressedThisFrame())
+>>>>>>> 5bb20c742c4577e39e65b3b820a891e3858104ff
         {
-            //animator.SetBool("isJumping", true);
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            rb.gravityScale /= 2;
-            --jumpsLeft;
-        }
+            if(jump.WasPressedThisFrame())
+            {
+                if(isFacingRight)
+                {   isWallJumping = true;
+                    
+                    isFacingRight = !isFacingRight;
+                    Vector3 localScale = transform.localScale;
+                    localScale.x *= -1f;
+                    transform.localScale = localScale;
+                    rb.velocity = new Vector2(wallJumpSpeed*transform.localScale.x, jumpForce);
 
-        if (jump.WasReleasedThisFrame())
-            rb.gravityScale = normalCharGravity;
+                    rb.gravityScale /= 2;
+                    yield return new WaitForSecondsRealtime(wallJumpTime);
+                    isWallJumping = false;
+                    
+
+                }
+                //else
+                //{
+                //    isFacingRight = !isFacingRight;
+                //    Vector3 localScale = transform.localScale;
+                //    localScale.x *= -1f;
+                //    transform.localScale = localScale;
+                //    rb.velocity = new Vector2(wallJumpSpeed, jumpForce);
+
+                //    rb.gravityScale /= 2;
+                //    yield return new WaitForSecondsRealtime(1f);
+                //}
+            }
+        }
+        else
+        {
+            if (jumpsLeft > 0 && jump.WasPressedThisFrame())
+            {
+                //animator.SetBool("isJumping", true);
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                rb.gravityScale /= 2;
+                --jumpsLeft;
+            }
+
+            if (jump.WasReleasedThisFrame())
+                rb.gravityScale = normalCharGravity;
+        }
+        
     }
 
     void DashReset()
@@ -271,9 +359,24 @@ public class Movement : MonoBehaviour
             return lastPlatformTouched == testAgainst;
     }
 
-    void Grabbing()
+    void Sliding()
     {
        Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, groundLayer);
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+       
+       
+            if (collidingWith)
+            {
+
+                //rb.gravityScale = slideGravity;
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y / 2);
+                isSliding = true;
+                lastPlatformTouched = "ground";
+
+=======
+>>>>>>> Stashed changes
        if (grab.IsPressed() && collidingWith)
        {
             rb.velocity = new Vector2(rb.velocity.x,0f);
@@ -284,7 +387,21 @@ public class Movement : MonoBehaviour
         {
             rb.gravityScale = normalCharGravity;
             isGrabing = false;
+<<<<<<< Updated upstream
+=======
+>>>>>>> 5bb20c742c4577e39e65b3b820a891e3858104ff
+>>>>>>> Stashed changes
         }
+
+            else
+            {
+                //rb.gravityScale = normalCharGravity;
+                isSliding = false;
+                
+            } 
+        
+           
+        
 
     }
 
@@ -294,9 +411,11 @@ public class Movement : MonoBehaviour
         if (isFacingRight && movementSpeed < 0f || !isFacingRight && movementSpeed > 0f)
         {
             isFacingRight = !isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
+            //Vector3 localScale = transform.localScale;
+            //localScale.x *= -1f;
+            //transform.localScale = localScale;
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+
         }
     }
 
