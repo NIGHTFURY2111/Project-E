@@ -51,8 +51,12 @@ public class Movement : MonoBehaviour
     [Header("Wall Settings")]
     [SerializeField] private Transform wallCheck;
     [SerializeField] private float slipMultiplier;
-    public float grabGravity;
-    private bool isGrabing = false;
+    private bool isSliding = false;
+    private bool isWallJumping = false;
+    [SerializeField] private float wallJumpSpeed;
+    [SerializeField] private float wallJumpTime;
+    [SerializeField] private float wallJumpForce;
+
     //[SerializeField] private string collidedWith;
     //private bool isTouchingWall = false;
 
@@ -117,9 +121,9 @@ public class Movement : MonoBehaviour
     {
 
         Flip();
-        WallJump();
-        Grabbing();
-        Jump();
+
+        Sliding();
+        StartCoroutine(Jump());
         StartCoroutine(Dash());
         if (transform.position.y < threshold)
             Respawn();
@@ -157,7 +161,7 @@ public class Movement : MonoBehaviour
 
     private void PlayerMovement()
     {
-        if (!isDashing)
+        if (!(isDashing||isSliding||isWallJumping))
         {// Changed If-else conditions to switch cases
 
 
@@ -219,29 +223,41 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void WallJump()
+    
+    IEnumerator Jump()
     {
-        if (isGrabing && jumpsLeft > 0 && jump.WasPressedThisFrame())
+        if(isSliding && !IsGrounded())
         {
-            rb.velocity = new Vector2(-transform.localScale.x * movementSpeed*100, jumpForce);
-            rb.gravityScale /= 2;
-            --jumpsLeft;
+            if(jump.WasPressedThisFrame()) 
+            {   
+                isWallJumping = true;
+                isFacingRight = !isFacingRight;
+                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                
+                rb.velocity = new Vector2(wallJumpSpeed*transform.localScale.x,wallJumpForce);
+                rb.gravityScale /= 2;
+                yield return new WaitForSecondsRealtime(wallJumpTime);
+                rb.gravityScale = normalCharGravity;
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
+                isWallJumping = false;
+                
+                
+            }
         }
-        if (jump.WasReleasedThisFrame())
-            rb.gravityScale = normalCharGravity;
-    }
-    private void Jump()
-    {
-        if (jumpsLeft > 0 && jump.WasPressedThisFrame())
+        
+        else
         {
-            //animator.SetBool("isJumping", true);
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            rb.gravityScale /= 2;
-            --jumpsLeft;
-        }
+            if (jumpsLeft > 0 && jump.WasPressedThisFrame())
+            {
+                //animator.SetBool("isJumping", true);
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                rb.gravityScale /= 2;
+                --jumpsLeft;
+            }
 
-        if (jump.WasReleasedThisFrame())
-            rb.gravityScale = normalCharGravity;
+            if (jump.WasReleasedThisFrame())
+                rb.gravityScale = normalCharGravity;
+        }
     }
 
     void DashReset()
@@ -271,32 +287,34 @@ public class Movement : MonoBehaviour
             return lastPlatformTouched == testAgainst;
     }
 
-    void Grabbing()
+    void Sliding()
     {
        Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, groundLayer);
-       if (grab.IsPressed() && collidingWith)
+       if (collidingWith)
        {
-            rb.velocity = new Vector2(rb.velocity.x,0f);
-            rb.gravityScale = grabGravity;
-            isGrabing = true;
+            rb.velocity = new Vector2(rb.velocity.x,rb.velocity.y*slipMultiplier);
+            
+            isSliding = true;
+            lastPlatformTouched = "ground";
        }
-        else if (grab.WasReleasedThisFrame() || !collidingWith)
+        else
         {
-            rb.gravityScale = normalCharGravity;
-            isGrabing = false;
+            
+            isSliding = false;
         }
 
     }
 
     private void Flip()
     {
-        float movementSpeed = PlayerInput().x;
-        if (isFacingRight && movementSpeed < 0f || !isFacingRight && movementSpeed > 0f)
+        if(!isWallJumping)
         {
-            isFacingRight = !isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
+            float movementSpeed = PlayerInput().x;
+            if (isFacingRight && movementSpeed < 0f || !isFacingRight && movementSpeed > 0f)
+            {
+                isFacingRight = !isFacingRight;
+                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+            }
         }
     }
 
