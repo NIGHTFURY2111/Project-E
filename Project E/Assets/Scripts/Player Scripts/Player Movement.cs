@@ -7,46 +7,62 @@ using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
 {
 
+    [Header("General Settings")]
     public Rigidbody2D rb;
     public Playerinput playerMovement;
     public Playerinput jumpScript;
     public Playerinput dashScript;
     public Playerinput grabScript;
+    
     //public Animator animator;
-
+    
     private InputAction move;
     private InputAction jump;
     private InputAction dash;
     private InputAction grab;
 
-
-    [SerializeField] private float normalCharGravity;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-
-    [SerializeField] private Transform wallCheck;
-
-    [SerializeField] private float slipMultiplier;
-    //[SerializeField] private string collidedWith;
-
+    
+    
+    [Header("Movement Settings")]
+    [SerializeField] private float normalCharGravity;
     public float movementSpeed;
-    public float jumpForce;
-    public int extraJumps;
+    public float stickySpeed;
+    public float currentSpeed;
+    private bool isFacingRight = true;
+    
+    
+    [Header("Dash Settings")]
     public int extraDashs;
     public float dashSpeed;
     public float dashTime;
     public float dashGravity;
-    public float grabGravity;
     public float vertDashDamp;
-    public float stickySpeed;
-    public float currentSpeed;
-    private int jumpsLeft;
-    private bool isFacingRight = true;
     private bool isDashing = false;
     private int dashsLeft;
-    private string lastPlatformTouched;
+    
+    
+    [Header("Jump Settings")]
+    public float jumpForce;
+    public int extraJumps;
+    private int jumpsLeft;
+
+    [Header("Wall Settings")]
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private float slipMultiplier;
+    public float grabGravity;
+    private bool isGrabing = false;
+    //[SerializeField] private string collidedWith;
     //private bool isTouchingWall = false;
-   
+
+
+
+    [Header("Respawn Settings")]
+    public GameObject RespawnPoint;
+    public float threshold;
+    private string lastPlatformTouched;
+    public Vector3 lastRespawnPoint;
 
 
 
@@ -57,6 +73,7 @@ public class Movement : MonoBehaviour
         jumpsLeft = extraJumps;
         rb.gravityScale *= normalCharGravity;
         currentSpeed = movementSpeed;
+        lastRespawnPoint = RespawnPoint.transform.position;
 
     }
 
@@ -98,10 +115,14 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+
         Flip();
+        WallJump();
         Grabbing();
         Jump();
         StartCoroutine(Dash());
+        if (transform.position.y < threshold)
+            Respawn();
         //if (IsGrounded()) Debug.Log("grounded");
 
         /*        animator.SetBool("isJumping", !IsGrounded());
@@ -126,6 +147,13 @@ public class Movement : MonoBehaviour
             DashReset();
         }
     }
+
+
+    public void Respawn()
+    {
+        transform.position = RespawnPoint.transform.position;
+    }
+
 
     private void PlayerMovement()
     {
@@ -191,6 +219,17 @@ public class Movement : MonoBehaviour
         }
     }
 
+    private void WallJump()
+    {
+        if (isGrabing && jumpsLeft > 0 && jump.WasPressedThisFrame())
+        {
+            rb.velocity = new Vector2(-transform.localScale.x * movementSpeed*100, jumpForce);
+            rb.gravityScale /= 2;
+            --jumpsLeft;
+        }
+        if (jump.WasReleasedThisFrame())
+            rb.gravityScale = normalCharGravity;
+    }
     private void Jump()
     {
         if (jumpsLeft > 0 && jump.WasPressedThisFrame())
@@ -235,20 +274,20 @@ public class Movement : MonoBehaviour
     void Grabbing()
     {
        Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, groundLayer);
-       if (grab.WasPressedThisFrame())
+       if (grab.IsPressed() && collidingWith)
        {
-            if (collidingWith)
-            {
-                rb.velocity = Vector3.zero;
-                rb.gravityScale = grabGravity;
-            }
+            rb.velocity = new Vector2(rb.velocity.x,0f);
+            rb.gravityScale = grabGravity;
+            isGrabing = true;
        }
         else if (grab.WasReleasedThisFrame() || !collidingWith)
         {
             rb.gravityScale = normalCharGravity;
+            isGrabing = false;
         }
 
     }
+
     private void Flip()
     {
         float movementSpeed = PlayerInput().x;

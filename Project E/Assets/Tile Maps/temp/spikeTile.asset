@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: spikeTile
   m_EditorClassIdentifier: 
-  m_DefaultSprite: {fileID: 260332898190217810, guid: 49016c6ded4fb3f46bfb14972e3cd921, type: 3}
+  m_DefaultSprite: {fileID: 3131116721319541311, guid: 1c12b46224ca7a34ab5907ce5aa82c01, type: 3}
   m_DefaultGameObject: {fileID: 8707381095757183197, guid: b7b12e0b4d961064785e63d59a5dcdb0, type: 3}
   m_DefaultColliderType: 1
   m_TilingRules: []

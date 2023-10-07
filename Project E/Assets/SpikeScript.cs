@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SpikeScript : MonoBehaviour
-{   public RespawnScript respawnScript;
+{   public Movement PlayerScript;
     // Start is called before the first frame update 
     private void Start()
     {
-        respawnScript = GameObject.FindWithTag("Player").GetComponent<RespawnScript>();
+        PlayerScript = GameObject.FindWithTag("Player").GetComponent<Movement>();
         
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        respawnScript.Respawn(); 
+        PlayerScript.Respawn(); 
 
     }
 }
