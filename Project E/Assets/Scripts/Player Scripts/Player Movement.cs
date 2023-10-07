@@ -23,6 +23,7 @@ public class Movement : MonoBehaviour
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask wallLayer;
     
     
     [Header("Movement Settings")]
@@ -51,14 +52,25 @@ public class Movement : MonoBehaviour
     [Header("Wall Settings")]
     [SerializeField] private Transform wallCheck;
     [SerializeField] private float slipMultiplier;
-    private bool isSliding = false;
-    private bool isWallJumping = false;
-    [SerializeField] private float wallJumpSpeed;
-    [SerializeField] private float wallJumpTime;
-    [SerializeField] private float wallJumpForce;
+    //private bool isSliding = false;
+    //private bool isWallJumping = false;
+    //[SerializeField] private float wallJumpSpeed;
+    //[SerializeField] private float wallJumpTime;
+    //[SerializeField] private float wallJumpForce;
+    //public float wallSlidingSpeed;
 
     //[SerializeField] private string collidedWith;
-    //private bool isTouchingWall = false;
+    ////private bool isTouchingWall = false;
+    private bool isWallSliding = false;
+    private float wallSlidingSpeed = 2f;
+
+    private bool isWallJumping;
+    //private float wallJumpingDirection;
+    public float wallJumpingTime;
+    //private float wallJumpingCounter;
+    //private float wallJumpingDuration = 0.4f;
+    public Vector2 wallJumpingPower;
+    public float wallPush;
 
 
 
@@ -78,7 +90,7 @@ public class Movement : MonoBehaviour
         rb.gravityScale *= normalCharGravity;
         currentSpeed = movementSpeed;
         lastRespawnPoint = RespawnPoint.transform.position;
-
+        Respawn();
     }
 
     #region necessary input system calls
@@ -120,10 +132,11 @@ public class Movement : MonoBehaviour
     void Update()
     {
 
-        Flip();
-
+        FlipCheck();
+        
         Sliding();
-        StartCoroutine(Jump());
+        Jump();
+        //StartCoroutine(Jump());
         StartCoroutine(Dash());
         if (transform.position.y < threshold)
             Respawn();
@@ -157,11 +170,12 @@ public class Movement : MonoBehaviour
     {
         transform.position = RespawnPoint.transform.position;
     }
-
+    
 
     private void PlayerMovement()
     {
-        if (!(isDashing||isSliding||isWallJumping))
+        if (!(isDashing||isWallSliding||isWallJumping))
+        //if (!(isDashing))
         {// Changed If-else conditions to switch cases
 
 
@@ -176,19 +190,7 @@ public class Movement : MonoBehaviour
                 default: rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
                     break;
             }
-            //if (isTouchingWall&&)
-                //if (IsGrounded("Slippery platform"))
-            //{
-            //    rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
-            //}
-            //else if(IsGrounded("Sticky platform"))
-            //{
-            //    rb.velocity = new Vector2(stickySpeed * PlayerInput().x, rb.velocity.y);
-            //}
-            //else /*if(IsGrounded())*/
-            //{
-            //    rb.velocity =  new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
-            //}
+
             //animator.SetFloat("Speed", math.abs(rb.velocity.x));
         }
 
@@ -223,42 +225,96 @@ public class Movement : MonoBehaviour
         }
     }
 
-    
-    IEnumerator Jump()
+    IEnumerator wallJump()
     {
-        if(isSliding && !IsGrounded())
+        if (!IsGrounded())
         {
-            if(jump.WasPressedThisFrame()) 
-            {   
-                isWallJumping = true;
-                isFacingRight = !isFacingRight;
-                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-                
-                rb.velocity = new Vector2(wallJumpSpeed*transform.localScale.x,wallJumpForce);
-                rb.gravityScale /= 2;
-                yield return new WaitForSecondsRealtime(wallJumpTime);
-                rb.gravityScale = normalCharGravity;
-                rb.velocity = new Vector2(rb.velocity.x, 0f);
-                isWallJumping = false;
-                
-                
-            }
-        }
-        
-        else
-        {
-            if (jumpsLeft > 0 && jump.WasPressedThisFrame())
-            {
-                //animator.SetBool("isJumping", true);
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-                rb.gravityScale /= 2;
-                --jumpsLeft;
-            }
-
-            if (jump.WasReleasedThisFrame())
-                rb.gravityScale = normalCharGravity;
+            isWallJumping = true;
+            Flip();
+            rb.velocity = Vector2.zero;
+            rb.velocity = new Vector2(wallJumpingPower.x * transform.localScale.x, wallJumpingPower.y);
+            yield return new WaitForSecondsRealtime(wallJumpingTime);
+            isWallJumping = false;
         }
     }
+    void Jump()
+    {
+        if (jumpsLeft > 0 && jump.WasPressedThisFrame())
+        {
+           
+            if (isWallSliding)
+            {   
+                
+                //isWallJumping = true;
+                //isFacingRight = !isFacingRight;
+                //transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+
+                //rb.velocity = new Vector2(wallJumpSpeed * transform.localScale.x, wallJumpForce);
+                //rb.gravityScale /= 2;
+                //yield return new WaitForSecondsRealtime(wallJumpTime);
+                //rb.gravityScale = normalCharGravity;
+                //rb.velocity = new Vector2(rb.velocity.x, 0f);
+                //isWallJumping = false;
+                StartCoroutine(wallJump());
+                
+                
+            }
+
+
+            else
+            {
+                   
+                //animator.SetBool("isJumping", true);
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                --jumpsLeft;
+                rb.gravityScale /= 2;   
+
+
+            }
+        }
+        if (jump.WasReleasedThisFrame())
+            rb.gravityScale = normalCharGravity;
+    }
+
+
+
+    //private void WallJump()
+    //{
+    //    if (isWallSliding)
+    //    {
+    //        isWallJumping = false;
+    //        wallJumpingDirection = -transform.localScale.x;
+    //        wallJumpingCounter = wallJumpingTime;
+
+    //        CancelInvoke(nameof(StopWallJumping));
+    //    }
+    //    else
+    //    {
+    //        wallJumpingCounter -= Time.deltaTime;
+    //    }
+
+    //    if (jump.WasPressedThisFrame() && wallJumpingCounter > 0f)
+    //    {
+    //        isWallJumping = true;
+    //        rb.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+    //        wallJumpingCounter = 0f;
+
+    //        if (transform.localScale.x != wallJumpingDirection)
+    //        {
+    //            isFacingRight = !isFacingRight;
+    //            Vector3 localScale = transform.localScale;
+    //            localScale.x *= -1f;
+    //            transform.localScale = localScale;
+    //        }
+
+    //        Invoke(nameof(StopWallJumping), wallJumpingDuration);
+    //    }
+    //}
+
+    //private void StopWallJumping()
+    //{
+    //    isWallJumping = false;
+    //}
 
     void DashReset()
     {
@@ -270,7 +326,7 @@ public class Movement : MonoBehaviour
     void JumpReset()
     {
         if (jumpsLeft != extraJumps)
-            jumpsLeft = extraJumps * Convert.ToInt32(IsGrounded()/* && jumpsLeft != extraJumps*/);
+            jumpsLeft = extraJumps * 1/* && jumpsLeft != extraJumps*/;
     }
 
 
@@ -287,35 +343,57 @@ public class Movement : MonoBehaviour
             return lastPlatformTouched == testAgainst;
     }
 
-    void Sliding()
+    //void Sliding()
+    //{
+    //   Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, groundLayer);
+    //   if (collidingWith && !IsGrounded() && movementSpeed != 0f)
+    //   {
+    //        rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed,float.MaxValue));
+    //        //rb.velocity = new Vector2(rb.velocity.x,rb.velocity.y*slipMultiplier);
+
+    //        isSliding = true;
+    //        lastPlatformTouched = "ground";
+    //   }
+    //    else
+    //    {
+
+    //        isSliding = false;
+    //    }
+
+    //}
+    private void Sliding()
     {
-       Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, groundLayer);
-       if (collidingWith)
-       {
-            rb.velocity = new Vector2(rb.velocity.x,rb.velocity.y*slipMultiplier);
-            
-            isSliding = true;
-            lastPlatformTouched = "ground";
-       }
-        else
+        Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, wallLayer);
+        if (collidingWith && !IsGrounded() && movementSpeed != 0f)
         {
             
-            isSliding = false;
+            isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x + (transform.localScale.x*wallPush), Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+            lastPlatformTouched = "ground";
+            JumpReset();
+            
         }
-
+        else
+        {
+            isWallSliding = false;
+        }
     }
 
-    private void Flip()
+    private void FlipCheck()
     {
         if(!isWallJumping)
         {
             float movementSpeed = PlayerInput().x;
             if (isFacingRight && movementSpeed < 0f || !isFacingRight && movementSpeed > 0f)
             {
-                isFacingRight = !isFacingRight;
-                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                Flip();
             }
         }
+    }
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
     }
 
 
@@ -323,22 +401,5 @@ public class Movement : MonoBehaviour
     {
         Gizmos.DrawWireSphere(groundCheck.position, 0.3f);
     }
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-
-
-    //    if (collision.gameObject.tag == "Sticky platform")
-    //    {
-    //        currentSpeed = stickySpeed;
-    //    }
-    //}
-    //private void OnTriggerExit2D(Collider2D collision)
-    //{
-    //    if (collision.gameObject.tag == "Sticky platform")
-    //    {
-    //        currentSpeed = movementSpeed;
-    //    }
-
-    //}
 
 }   
