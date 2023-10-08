@@ -8,6 +8,7 @@ public class Movement : MonoBehaviour
 {
 
     [Header("General Settings")]
+    public GameObject currentTeleporter;
     public Rigidbody2D rb;
     public Playerinput playerMovement;
     public Playerinput jumpScript;
@@ -136,6 +137,7 @@ public class Movement : MonoBehaviour
         
         Sliding();
         Jump();
+        Teleport();
         //StartCoroutine(Jump());
         StartCoroutine(Dash());
         if (transform.position.y < threshold)
@@ -376,6 +378,15 @@ public class Movement : MonoBehaviour
         else
         {
             isWallSliding = false;
+        }
+    }
+
+    public void Teleport()
+    {
+        if (currentTeleporter != null && isDashing)
+        {
+            transform.position = currentTeleporter.GetComponent<TeleportScript>().Destination.position;
+            isDashing = false;
         }
     }
 
