@@ -33,6 +33,7 @@ public class Movement : MonoBehaviour
     public float stickySpeed;
     public float currentSpeed;
     private bool isFacingRight = true;
+    public float direction;
     
     
     [Header("Dash Settings")]
@@ -186,10 +187,10 @@ public class Movement : MonoBehaviour
                 case "Slippery platform": rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
                     break;
 
-                case "Sticky platform": rb.velocity = new Vector2(stickySpeed * PlayerInput().x, rb.velocity.y);
+                case "Sticky platform": rb.velocity = new Vector2( PlayerInput().x + direction, rb.velocity.y);
                     break;
                 
-                default: rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
+                default: rb.velocity = new Vector2(currentSpeed *PlayerInput().x, rb.velocity.y);
                     break;
             }
 
