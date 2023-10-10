@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3891966798309014048}
   - component: {fileID: 1033330077986347327}
   - component: {fileID: 6394134553752267594}
+  - component: {fileID: 3808558470162591305}
   m_Layer: 0
   m_Name: Virtual Camera1
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 175480544563239736}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 18.04918, y: 3.508378, z: -9.965215}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -56,7 +57,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 13
+    OrthographicSize: 10
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -88,6 +89,19 @@ MonoBehaviour:
   m_BoundingShape2D: {fileID: 4799434235903122358}
   m_Damping: 0.5
   m_MaxWindowSize: -1
+--- !u!114 &3808558470162591305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175480544563239736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10b28223545ebf240a34b24e112cfc5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VirtualCamera: {fileID: 1033330077986347327}
 --- !u!1 &5816635526031836440
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,7 +114,7 @@ GameObject:
   - component: {fileID: 4799434235903122358}
   - component: {fileID: 2107867134756607067}
   m_Layer: 0
-  m_Name: room1
+  m_Name: room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -114,7 +128,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5816635526031836440}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.80918, y: 1.3896223, z: -0.034785345}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -166,10 +180,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 55, y: 19}
-      - {x: -11, y: 19}
-      - {x: -11, y: -15}
-      - {x: 55, y: -15}
+    - - {x: 16, y: 16}
+      - {x: -32, y: 16}
+      - {x: -32, y: -12}
+      - {x: 16, y: -12}
   m_UseDelaunayMesh: 0
 --- !u!114 &2107867134756607067
 MonoBehaviour:

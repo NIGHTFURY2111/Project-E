@@ -270,13 +270,13 @@ public class Movement : MonoBehaviour
                 //animator.SetBool("isJumping", true);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 --jumpsLeft;
-                rb.gravityScale /= 2;   
+                //rb.gravityScale /= 2;   
 
 
             }
         }
-        if (jump.WasReleasedThisFrame())
-            rb.gravityScale = normalCharGravity;
+        //if (jump.WasReleasedThisFrame())
+            //rb.gravityScale = normalCharGravity;
     }
 
 
