@@ -149,6 +149,7 @@ public class Movement : MonoBehaviour
         StartCoroutine(Dash());
         if (transform.position.y < threshold)
             Respawn();
+        
         //if (IsGrounded()) Debug.Log("grounded");
 
         /*        animator.SetBool("isJumping", !IsGrounded());
@@ -196,7 +197,7 @@ public class Movement : MonoBehaviour
                     break;
 
                 case "Sticky platform":
-                    rb.velocity = new Vector2(PlayerInput().x + direction, rb.velocity.y);
+                    
                     break;
 
                 default:
@@ -419,10 +420,7 @@ public class Movement : MonoBehaviour
     }
 
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(groundCheck.position, 0.3f);
-    }
+    
     //private void OnTriggerStay2D(Collider2D collision)
     //{
     //    if (IsGrounded("Sticky Platform"))
