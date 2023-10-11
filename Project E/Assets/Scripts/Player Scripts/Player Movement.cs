@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,6 +33,15 @@ public class Movement : MonoBehaviour
     public float stickySpeed;
     public float currentSpeed;
     private bool isFacingRight = true;
+<<<<<<< Updated upstream
+=======
+    public float direction;
+
+    [Header("Ice Settings")]
+    [SerializeField] private float slipMultiplier;
+    public float maxIceSpeed;
+    public float iceGripValue;
+>>>>>>> Stashed changes
     
     
     [Header("Dash Settings")]
@@ -40,6 +50,7 @@ public class Movement : MonoBehaviour
     public float dashTime;
     public float dashGravity;
     public float vertDashDamp;
+    public float vertMaxDash;
     private bool isDashing = false;
     private int dashsLeft;
     
@@ -51,7 +62,12 @@ public class Movement : MonoBehaviour
 
     [Header("Wall Settings")]
     [SerializeField] private Transform wallCheck;
-    [SerializeField] private float slipMultiplier;
+    [SerializeField] float wallSlidingSpeed = 2f;
+    public float wallJumpingTime;
+    public float wallPush;
+    public Vector2 wallJumpingPower;
+    private bool isWallJumping;
+    private bool isWallSliding = false;
     //private bool isSliding = false;
     //private bool isWallJumping = false;
     //[SerializeField] private float wallJumpSpeed;
@@ -61,16 +77,10 @@ public class Movement : MonoBehaviour
 
     //[SerializeField] private string collidedWith;
     ////private bool isTouchingWall = false;
-    private bool isWallSliding = false;
-    private float wallSlidingSpeed = 2f;
 
-    private bool isWallJumping;
     //private float wallJumpingDirection;
-    public float wallJumpingTime;
     //private float wallJumpingCounter;
     //private float wallJumpingDuration = 0.4f;
-    public Vector2 wallJumpingPower;
-    public float wallPush;
 
 
 
@@ -86,6 +96,7 @@ public class Movement : MonoBehaviour
 
     private void Start()
     {
+
         jumpsLeft = extraJumps;
         rb.gravityScale *= normalCharGravity;
         currentSpeed = movementSpeed;
@@ -182,12 +193,20 @@ public class Movement : MonoBehaviour
             switch (lastPlatformTouched)
             {
                 case "Slippery platform": rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
+                    rb.velocity = new Vector2(Mathf.Clamp(Mathf.MoveTowards(rb.velocity.x, 0, iceGripValue), float.MinValue,maxIceSpeed), rb.velocity.y/*Mathf.MoveTowards(rb.velocity.y, 0, iceGripValue)*/);
                     break;
 
+<<<<<<< Updated upstream
                 case "Sticky platform": rb.velocity = new Vector2(stickySpeed * PlayerInput().x, rb.velocity.y);
                     break;
                 
                 default: rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
+=======
+                //case "Sticky platform": rb.velocity = new Vector2(currentSpeed * PlayerInput().x + direction, rb.velocity.y);
+                //    break;
+                
+                default: rb.velocity = new Vector2(currentSpeed *PlayerInput().x, rb.velocity.y).PixelPerfect();
+>>>>>>> Stashed changes
                     break;
             }
 
@@ -213,13 +232,13 @@ public class Movement : MonoBehaviour
             rb.velocity = Vector2.zero;
             rb.gravityScale = dashGravity;
             yield return new WaitForSecondsRealtime(0.05f);
-            rb.velocity = (PlayerInput() != Vector2.zero ) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y*vertDashDamp):
-                          (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0);
+            rb.velocity = (PlayerInput() != Vector2.zero ) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y*vertDashDamp).PixelPerfect():
+                          new Vector2(dashSpeed * (transform.localScale.x/4),0).PixelPerfect();
 
             yield return new WaitForSecondsRealtime(dashTime);
             
+            rb.velocity =  new Vector2( rb.velocity.x, Mathf.Clamp(rb.velocity.y,float.MinValue, vertMaxDash));
             rb.gravityScale = normalCharGravity;
-            /*rb.velocity =  Vector2.zeronew Vector2( rb.velocity.x, 0)*/;
             isDashing = false;
             lastPlatformTouched = "ground";
         }
@@ -232,7 +251,7 @@ public class Movement : MonoBehaviour
             isWallJumping = true;
             Flip();
             rb.velocity = Vector2.zero;
-            rb.velocity = new Vector2(wallJumpingPower.x * transform.localScale.x, wallJumpingPower.y);
+            rb.velocity = new Vector2(wallJumpingPower.x * (transform.localScale.x/4), wallJumpingPower.y).PixelPerfect();
             yield return new WaitForSecondsRealtime(wallJumpingTime);
             isWallJumping = false;
         }
@@ -401,5 +420,12 @@ public class Movement : MonoBehaviour
     {
         Gizmos.DrawWireSphere(groundCheck.position, 0.3f);
     }
+    //private void OnTriggerStay2D(Collider2D collision)
+    //{
+    //    if (IsGrounded("Sticky Platform"))
+    //    {
+    //        rb.velocity += new Vector2(direction, 0f);
 
+    //    }
+    //}
 }   
