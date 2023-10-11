@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,9 +15,9 @@ public class Movement : MonoBehaviour
     public Playerinput jumpScript;
     public Playerinput dashScript;
     public Playerinput grabScript;
-    
+
     //public Animator animator;
-    
+
     private InputAction move;
     private InputAction jump;
     private InputAction dash;
@@ -25,8 +26,8 @@ public class Movement : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask wallLayer;
-    
-    
+
+
     [Header("Movement Settings")]
     [SerializeField] private float normalCharGravity;
     public float movementSpeed;
@@ -34,18 +35,24 @@ public class Movement : MonoBehaviour
     public float currentSpeed;
     private bool isFacingRight = true;
     public float direction;
-    
-    
+
+    [Header("Ice Settings")]
+    [SerializeField] private float slipMultiplier;
+    public float maxIceSpeed;
+    public float iceGripValue;
+
+
     [Header("Dash Settings")]
     public int extraDashs;
     public float dashSpeed;
     public float dashTime;
     public float dashGravity;
     public float vertDashDamp;
+    public float vertMaxDash;
     private bool isDashing = false;
     private int dashsLeft;
-    
-    
+
+
     [Header("Jump Settings")]
     public float jumpForce;
     public int extraJumps;
@@ -53,7 +60,12 @@ public class Movement : MonoBehaviour
 
     [Header("Wall Settings")]
     [SerializeField] private Transform wallCheck;
-    [SerializeField] private float slipMultiplier;
+    [SerializeField] float wallSlidingSpeed = 2f;
+    public float wallJumpingTime;
+    public float wallPush;
+    public Vector2 wallJumpingPower;
+    private bool isWallJumping;
+    private bool isWallSliding = false;
     //private bool isSliding = false;
     //private bool isWallJumping = false;
     //[SerializeField] private float wallJumpSpeed;
@@ -63,16 +75,10 @@ public class Movement : MonoBehaviour
 
     //[SerializeField] private string collidedWith;
     ////private bool isTouchingWall = false;
-    private bool isWallSliding = false;
-    private float wallSlidingSpeed = 2f;
 
-    private bool isWallJumping;
     //private float wallJumpingDirection;
-    public float wallJumpingTime;
     //private float wallJumpingCounter;
     //private float wallJumpingDuration = 0.4f;
-    public Vector2 wallJumpingPower;
-    public float wallPush;
 
 
 
@@ -88,6 +94,7 @@ public class Movement : MonoBehaviour
 
     private void Start()
     {
+
         jumpsLeft = extraJumps;
         rb.gravityScale *= normalCharGravity;
         currentSpeed = movementSpeed;
@@ -129,16 +136,15 @@ public class Movement : MonoBehaviour
         grab.Disable();
     }
 
-#endregion
+    #endregion
 
     void Update()
     {
 
         FlipCheck();
-        
+        Teleport();
         Sliding();
         Jump();
-        Teleport();
         //StartCoroutine(Jump());
         StartCoroutine(Dash());
         if (transform.position.y < threshold)
@@ -173,24 +179,29 @@ public class Movement : MonoBehaviour
     {
         transform.position = RespawnPoint.transform.position;
     }
-    
+
 
     private void PlayerMovement()
     {
-        if (!(isDashing||isWallSliding||isWallJumping))
+        if (!(isDashing || isWallSliding || isWallJumping))
         //if (!(isDashing))
         {// Changed If-else conditions to switch cases
 
 
             switch (lastPlatformTouched)
             {
-                case "Slippery platform": rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
+                case "Slippery platform":
+                    rb.AddForce(new Vector2(currentSpeed * PlayerInput().x * slipMultiplier, rb.velocity.y));
+                    rb.velocity = new Vector2(Mathf.Clamp(Mathf.MoveTowards(rb.velocity.x, 0, iceGripValue), -maxIceSpeed, maxIceSpeed), rb.velocity.y/*Mathf.MoveTowards(rb.velocity.y, 0, iceGripValue)*/);
                     break;
 
-                case "Sticky platform": rb.velocity = new Vector2( PlayerInput().x + direction, rb.velocity.y);
+                case "Sticky platform":
+                    rb.velocity = new Vector2(PlayerInput().x + direction, rb.velocity.y);
                     break;
-                
-                default: rb.velocity = new Vector2(currentSpeed *PlayerInput().x, rb.velocity.y);
+
+                default:
+                    rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y).PixelPerfect();
+
                     break;
             }
 
@@ -203,39 +214,39 @@ public class Movement : MonoBehaviour
     {
         return move.ReadValue<Vector2>();
     }
-      
+
     IEnumerator Dash()
     {
-        if (dash.WasPressedThisFrame() && (!isDashing) && dashsLeft!=0)
+        if (dash.WasPressedThisFrame() && (!isDashing) && dashsLeft != 0)
         {
             //Vector2 direction = move.ReadValue<Vector2>();
             //Vector2 storing = rb.velocity;
-            
+
             isDashing = true;
             dashsLeft--;
             rb.velocity = Vector2.zero;
             rb.gravityScale = dashGravity;
             yield return new WaitForSecondsRealtime(0.05f);
-            rb.velocity = (PlayerInput() != Vector2.zero ) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y*vertDashDamp):
-                          (isFacingRight) ? new Vector2(dashSpeed,0) : new Vector2(-dashSpeed,0);
+            rb.velocity = (PlayerInput() != Vector2.zero) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y * vertDashDamp).PixelPerfect() :
+                          new Vector2(dashSpeed * (transform.localScale.x / 4), 0).PixelPerfect();
 
             yield return new WaitForSecondsRealtime(dashTime);
-            
+
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, float.MinValue, vertMaxDash));
             rb.gravityScale = normalCharGravity;
-            /*rb.velocity =  Vector2.zeronew Vector2( rb.velocity.x, 0)*/;
             isDashing = false;
             lastPlatformTouched = "ground";
         }
     }
 
-    IEnumerator wallJump()
+    IEnumerator WallJump()
     {
         if (!IsGrounded())
         {
             isWallJumping = true;
             Flip();
             rb.velocity = Vector2.zero;
-            rb.velocity = new Vector2(wallJumpingPower.x * transform.localScale.x, wallJumpingPower.y);
+            rb.velocity = new Vector2(wallJumpingPower.x * (transform.localScale.x / 4), wallJumpingPower.y).PixelPerfect();
             yield return new WaitForSecondsRealtime(wallJumpingTime);
             isWallJumping = false;
         }
@@ -244,10 +255,10 @@ public class Movement : MonoBehaviour
     {
         if (jumpsLeft > 0 && jump.WasPressedThisFrame())
         {
-           
+
             if (isWallSliding)
-            {   
-                
+            {
+
                 //isWallJumping = true;
                 //isFacingRight = !isFacingRight;
                 //transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
@@ -258,15 +269,15 @@ public class Movement : MonoBehaviour
                 //rb.gravityScale = normalCharGravity;
                 //rb.velocity = new Vector2(rb.velocity.x, 0f);
                 //isWallJumping = false;
-                StartCoroutine(wallJump());
-                
-                
+                StartCoroutine(WallJump());
+
+
             }
 
 
             else
             {
-                   
+
                 //animator.SetBool("isJumping", true);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 --jumpsLeft;
@@ -276,7 +287,7 @@ public class Movement : MonoBehaviour
             }
         }
         //if (jump.WasReleasedThisFrame())
-            //rb.gravityScale = normalCharGravity;
+        //    rb.gravityScale = normalCharGravity;
     }
 
 
@@ -333,7 +344,7 @@ public class Movement : MonoBehaviour
     }
 
 
-    bool IsGrounded( string testAgainst = "ground")
+    bool IsGrounded(string testAgainst = "ground")
     {
         Collider2D collidingWith = Physics2D.OverlapCircle(groundCheck.position, 0.3f, groundLayer);
 
@@ -369,19 +380,18 @@ public class Movement : MonoBehaviour
         Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, wallLayer);
         if (collidingWith && !IsGrounded() && movementSpeed != 0f)
         {
-            
+
             isWallSliding = true;
-            rb.velocity = new Vector2(rb.velocity.x + (transform.localScale.x*wallPush), Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+            rb.velocity = new Vector2(rb.velocity.x + (transform.localScale.x * wallPush), Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
             lastPlatformTouched = "ground";
             JumpReset();
-            
+
         }
         else
         {
             isWallSliding = false;
         }
     }
-
     public void Teleport()
     {
         if (currentTeleporter != null && isDashing)
@@ -393,7 +403,7 @@ public class Movement : MonoBehaviour
 
     private void FlipCheck()
     {
-        if(!isWallJumping)
+        if (!isWallJumping)
         {
             float movementSpeed = PlayerInput().x;
             if (isFacingRight && movementSpeed < 0f || !isFacingRight && movementSpeed > 0f)
@@ -413,5 +423,12 @@ public class Movement : MonoBehaviour
     {
         Gizmos.DrawWireSphere(groundCheck.position, 0.3f);
     }
+    //private void OnTriggerStay2D(Collider2D collision)
+    //{
+    //    if (IsGrounded("Sticky Platform"))
+    //    {
+    //        rb.velocity += new Vector2(direction, 0f);
 
-}   
+    //    }
+    //}
+}

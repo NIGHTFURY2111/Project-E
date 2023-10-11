@@ -7,7 +7,7 @@ public class TeleportScript : MonoBehaviour
     public Transform Destination;
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Player")
+        if (collision.CompareTag("Player"))
         {
             GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter = gameObject;
         }
@@ -16,7 +16,7 @@ public class TeleportScript : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "Player" && GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter == gameObject)
+        if (collision.CompareTag("Player") && GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter == gameObject)
         {
             GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter = null;
         }
