@@ -179,6 +179,7 @@ public class Movement : MonoBehaviour
     public void Respawn()
     {
         transform.position = RespawnPoint.transform.position;
+        rb.velocity = Vector2.zero;
     }
 
 

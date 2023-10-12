@@ -38,7 +38,8 @@ public class falling_object : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        PlayerScript.Respawn();
+        if(collision.CompareTag("Player"))
+             PlayerScript.Respawn();
 
     }
     private void OnDrawGizmos()
