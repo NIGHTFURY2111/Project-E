@@ -11,9 +11,16 @@ public class falling_object : MonoBehaviour
     [SerializeField] private LayerMask player;
     [SerializeField] private Transform rayCasts;
     [SerializeField] private float raylenght;
+    private Movement PlayerScript;
+    private void Start()
+    {
+        PlayerScript = GameObject.FindWithTag("Player").GetComponent<Movement>();
+
+    }
+   
     private void FixedUpdate()
     {  
-        RaycastHit2D hit = Physics2D.BoxCast(rayCasts.position,transform.localScale,0f,Vector2.down,raylenght,player);
+        RaycastHit2D hit = Physics2D.BoxCast(rayCasts.position,new Vector2(transform.localScale.x +3,transform.localScale.y+raylenght),0f,Vector2.down,raylenght,player);
        
        
         if (hit.collider != null/*||hit1.collider != null*/)
@@ -29,9 +36,14 @@ public class falling_object : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = gravityScale; 
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        PlayerScript.Respawn();
+
+    }
     private void OnDrawGizmos()
     {
 
-        Gizmos.DrawCube(new Vector3(rayCasts.position.x,rayCasts.position.y-raylenght,rayCasts.position.z), transform.localScale);
+        Gizmos.DrawCube(new Vector3(rayCasts.position.x,rayCasts.position.y-raylenght,rayCasts.position.z), new Vector2(transform.localScale.x +3, transform.localScale.y + raylenght));
     }
 }
