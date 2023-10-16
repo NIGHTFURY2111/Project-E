@@ -57,6 +57,7 @@ public class Movement : MonoBehaviour
     public float jumpForce;
     public int extraJumps;
     private int jumpsLeft;
+    private bool isJumping = false;
 
     [Header("Wall Settings")]
     [SerializeField] private Transform wallCheck;
@@ -248,6 +249,7 @@ public class Movement : MonoBehaviour
             isWallJumping = true;
             Flip();
             rb.velocity = Vector2.zero;
+            jumpsLeft = 0;
             rb.velocity = new Vector2(wallJumpingPower.x * (transform.localScale.x / 4), wallJumpingPower.y).PixelPerfect();
             yield return new WaitForSecondsRealtime(wallJumpingTime);
             isWallJumping = false;
@@ -255,7 +257,7 @@ public class Movement : MonoBehaviour
     }
     void Jump()
     {
-        if (jumpsLeft > 0 && jump.WasPressedThisFrame())
+        if (jumpsLeft > 0 && jump.WasPressedThisFrame() && !isWallJumping)
         {
 
             if (isWallSliding)
@@ -279,6 +281,7 @@ public class Movement : MonoBehaviour
 
             else
             {
+                isJumping = true;
 
                 //animator.SetBool("isJumping", true);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
@@ -288,7 +291,9 @@ public class Movement : MonoBehaviour
 
             }
         }
-        //if (jump.WasReleasedThisFrame())
+        if (rb.velocity.y <= 0f)
+            isJumping = false;
+
         //    rb.gravityScale = normalCharGravity;
     }
 
@@ -380,13 +385,20 @@ public class Movement : MonoBehaviour
     private void Sliding()
     {
         Collider2D collidingWith = Physics2D.OverlapCircle(wallCheck.position, 0.3f, wallLayer);
-        if (collidingWith && !IsGrounded() && movementSpeed != 0f)
+        if (collidingWith)
         {
-
-            isWallSliding = true;
-            rb.velocity = new Vector2(rb.velocity.x + (transform.localScale.x * wallPush), Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
-            lastPlatformTouched = "ground";
-            JumpReset();
+            if (isJumping)
+            {
+                jumpsLeft = 0;
+            }
+            if (!IsGrounded() && movementSpeed != 0f && !isJumping)
+            {
+                isWallSliding = true;
+                rb.velocity = Vector2.zero;
+                rb.velocity = new Vector2(rb.velocity.x + (transform.localScale.x * wallPush), Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+                lastPlatformTouched = "ground";
+                JumpReset();
+            }
 
         }
         else
