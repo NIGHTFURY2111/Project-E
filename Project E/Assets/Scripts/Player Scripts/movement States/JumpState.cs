@@ -8,23 +8,31 @@ public class JumpState : BaseState
     {
     }
 
-    public override void CheckSwitchState()
-    {
-        throw new System.NotImplementedException();
-    }
 
     public override void EnterState()
     {
-        throw new System.NotImplementedException();
-    }
-
-    public override void ExitState()
-    {
-        throw new System.NotImplementedException();
+        ctx.moveDirectionY += ctx.playerJumpingForce;
+        ctx.gravity = ctx.jumpGravity;
     }
 
     public override void UpdateState()
     {
-        throw new System.NotImplementedException();
+        CheckSwitchState();
     }
+
+    public override void ExitState()
+    {
+        ctx.gravity = ctx.normalGravity;
+    }
+
+    public override void CheckSwitchState()
+    {//fall
+
+        //fall
+        if (ctx.moveDirectionY <= 0)
+        {
+            SwitchState(factory.Fall());
+        }
+    }
+
 }

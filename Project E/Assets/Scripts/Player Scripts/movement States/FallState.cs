@@ -10,21 +10,22 @@ public class FallState : BaseState
 
     public override void CheckSwitchState()
     {
-        throw new System.NotImplementedException();
+        if (ctx.isGrounded)
+        {
+            SwitchState(factory.Idle());
+        }
     }
 
     public override void EnterState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void ExitState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void UpdateState()
     {
-        throw new System.NotImplementedException();
+        CheckSwitchState();
     }
 }

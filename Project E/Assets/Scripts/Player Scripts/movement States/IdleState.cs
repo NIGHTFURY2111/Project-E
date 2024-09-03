@@ -22,12 +22,18 @@ public class IdleState : BaseState
     }
 
     public override void CheckSwitchState()
-    {//move
+    {//move jump
         
         //move
         if (ctx.moveInput.IsInProgress())
         {
             SwitchState(factory.Move());
+        }
+
+        //jump
+        if (ctx.jumpInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Jump());
         }
     }
 }

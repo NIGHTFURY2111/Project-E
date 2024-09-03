@@ -26,10 +26,18 @@ public class MoveState : BaseState
     }
 
     public override void CheckSwitchState()
-    {
+    {//idle jump
+
+        //idle
         if (ctx.moveInput.WasReleasedThisFrame())
         {
             SwitchState(factory.Idle());
+        }
+
+        //jump
+        if (ctx.jumpInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Jump());
         }
     }
 }
