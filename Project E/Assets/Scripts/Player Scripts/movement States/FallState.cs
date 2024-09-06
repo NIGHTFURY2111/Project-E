@@ -14,6 +14,18 @@ public class FallState : BaseState
         {
             SwitchState(factory.Idle());
         }
+
+        if (ctx.jumpInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Jump());
+        }
+
+        //dash
+        if (ctx.dashInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Dash());
+        }
+
     }
 
     public override void EnterState()

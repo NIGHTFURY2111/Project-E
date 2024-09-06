@@ -11,12 +11,17 @@ public class JumpState : BaseState
 
     public override void EnterState()
     {
+        ctx.moveDirectionY = 0;
+        ctx.gravity = 0;
         ctx.moveDirectionY += ctx.playerJumpingForce;
         ctx.gravity = ctx.jumpGravity;
     }
 
     public override void UpdateState()
     {
+        //dynamic height for jumps
+        ctx.gravity = (ctx.jumpInput.IsInProgress()) ? ctx.jumpGravity : ctx.normalGravity;
+
         CheckSwitchState();
     }
 
@@ -33,6 +38,18 @@ public class JumpState : BaseState
         {
             SwitchState(factory.Fall());
         }
+        //jump into another jump
+        if (ctx.jumpInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Jump());
+        }
+
+        //dash
+        if (ctx.dashInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Dash());
+        }
+
     }
 
 }

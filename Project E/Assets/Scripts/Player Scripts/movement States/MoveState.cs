@@ -18,6 +18,7 @@ public class MoveState : BaseState
 
         outputVector = ctx.playerInput * ctx.playerMoveSpeed;
         ctx.moveDirectionX = outputVector.x;
+        CheckSwitchState();
     }
 
     public override void ExitState()
@@ -38,6 +39,12 @@ public class MoveState : BaseState
         if (ctx.jumpInput.WasPressedThisFrame())
         {
             SwitchState(factory.Jump());
+        }
+
+        //dash
+        if (ctx.dashInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Dash());
         }
     }
 }

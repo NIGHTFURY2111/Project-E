@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using static PlayerStateMachine;
 
 public class PlayerStateMachine : MonoBehaviour
 {
@@ -11,9 +12,10 @@ public class PlayerStateMachine : MonoBehaviour
     [System.Serializable]
     public class GeneralSettings
     {
-    public Playerinput playerMovement;
-    public Transform groundCheck;
-    public LayerMask groundLayer;
+        public float maxFallingVelocity;
+        public Playerinput playerMovement;
+        public Transform groundCheck;
+        public LayerMask groundLayer;
     }
 
 
@@ -33,7 +35,7 @@ public class PlayerStateMachine : MonoBehaviour
     {
         //public int extraDashs;
         public float dashSpeed;
-        public float dashTime;
+        public float _dashTime;
         public float dashGravity;
         public float vertDashDamp;
         public float vertMaxDash;
@@ -51,6 +53,7 @@ public class PlayerStateMachine : MonoBehaviour
         public int jumpsLeft;
         public bool isJumping = false;
     }
+    #endregion
 
     [SerializeField] GeneralSettings generalSettings;
     [SerializeField] MovementSettings movementSettings;
@@ -65,15 +68,15 @@ public class PlayerStateMachine : MonoBehaviour
     Rigidbody2D rb;
     InputAction _move;
     InputAction _jump;
-    InputAction dash;
+    InputAction _dash;
     InputAction grab;
     Vector2 _moveDirection = Vector2.zero;
     public float gravity;
     float distanceToGround;
     public event Action<bool> PlayerGroundedEvent;
+    public event Action<bool> playerWallEvent;
 
 
-    #endregion
     #region necessary input system calls
     private void Awake()
     {
@@ -86,7 +89,7 @@ public class PlayerStateMachine : MonoBehaviour
 
         _move = generalSettings.playerMovement.Player.Move;
         _jump = generalSettings.playerMovement.Player.Jump;
-        dash = generalSettings.playerMovement.Player.Dash;
+        _dash = generalSettings.playerMovement.Player.Dash;
         grab = generalSettings.playerMovement.Player.Grab;
 
     }
@@ -94,7 +97,7 @@ public class PlayerStateMachine : MonoBehaviour
     {
         _move.Enable();
         _jump.Enable();
-        dash.Enable();
+        _dash.Enable();
         grab.Enable();
     }
 
@@ -103,7 +106,7 @@ public class PlayerStateMachine : MonoBehaviour
     {
         _move.Disable();
         _jump.Disable();
-        dash.Disable();
+        _dash.Disable();
         grab.Disable();
     }
 
@@ -129,11 +132,7 @@ public class PlayerStateMachine : MonoBehaviour
         //CheckRespawn();
         _currentState.UpdateState();
 
-        PlayerGroundedEvent?.Invoke(Physics2D.Raycast(transform.position, Vector2.down, distanceToGround+0.1f, generalSettings.groundLayer));
-
-        Debug.DrawLine(transform.position, new Vector2(transform.position.x,transform.position.y- distanceToGround + 0.1f),Color.red);
-
-        Debug.Log((Physics2D.Raycast(transform.position, Vector2.down, distanceToGround + 0.1f, generalSettings.groundLayer)?"tru":"fals")+"    "+_moveDirection.y);
+        RayCasts();
 
     }
 
@@ -164,11 +163,12 @@ public class PlayerStateMachine : MonoBehaviour
     }
     public void Artificialgravity()
     {
-        _moveDirection.y -= gravity;
-        if (isGrounded)
-        {
-            _moveDirection.y = Math.Clamp(_moveDirection.y, -0.2f, int.MaxValue);
-        }
+        _moveDirection.y = Math.Clamp
+            (
+                _moveDirection.y - gravity,
+                (isGrounded)? -0.2f : generalSettings.maxFallingVelocity, // -.2f is applied on ground, dont set it too high
+                int.MaxValue
+            );
     }
 
     //void CheckRespawn()
@@ -183,9 +183,14 @@ public class PlayerStateMachine : MonoBehaviour
 
     //}
 
-    public void GroundCheck()
+    public void RayCasts()
     {
-        Physics2D.Raycast(transform.position, Vector2.down, (transform.localScale.y / 2) + 0.01f, generalSettings.groundLayer);
+        //raycsast for ground check
+        PlayerGroundedEvent?.Invoke(Physics2D.Raycast(transform.position, Vector2.down, distanceToGround + 0.1f, generalSettings.groundLayer));
+        Debug.DrawLine(transform.position, new Vector2(transform.position.x,transform.position.y- distanceToGround + 0.1f),Color.red);
+
+        // raycast for wall Check
+
     }
 
     private void OnGroundCheck(bool IsGrounded)
@@ -196,18 +201,22 @@ public class PlayerStateMachine : MonoBehaviour
 
     #region Getters Setters
 
-
+    
     public Vector2 playerInput { get => _move.ReadValue<Vector2>(); }
-    public float moveDirectionX { get { return _moveDirection.x; } set { _moveDirection.x = value; } }
-    public float moveDirectionY { get { return _moveDirection.y; } set { _moveDirection.y = value; } }
+    public float moveDirectionX { get => _moveDirection.x; set => _moveDirection.x = value; }
+    public float moveDirectionY { get => _moveDirection.y; set => _moveDirection.y = value; }
     public float playerMoveSpeed { get => movementSettings.movementSpeed; }
+    public float dashSpeedMultiplier { get => dashSettings.dashSpeed; }
+    public float dashTime { get => dashSettings._dashTime; }
     public float playerJumpingForce { get => jumpSettings.jumpForce; }
     public float jumpGravity { get => jumpSettings.jumpGravity; }
+    public float dashGravity { get => dashSettings.dashGravity; }
     public float normalGravity { get => movementSettings.playerGravity; }
     //public float currentGravity { get => movementSettings.playerGravity; set => movementSettings.playerGravity = value; }
-    public BaseState currentState { get { return _currentState; } set { _currentState = value; } }
+    public BaseState currentState { get => _currentState; set => _currentState = value; }
     public InputAction moveInput { get=>_move; set => _move = value; }
     public InputAction jumpInput { get=>_jump; set => _jump = value; }
+    public InputAction dashInput { get=>_dash; set => _dash = value; }
 
     public bool isGrounded { get; private set; }
 

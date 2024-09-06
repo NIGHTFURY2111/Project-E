@@ -35,5 +35,12 @@ public class IdleState : BaseState
         {
             SwitchState(factory.Jump());
         }
+
+        //dash
+        if (ctx.dashInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Dash());
+        }
+
     }
 }
