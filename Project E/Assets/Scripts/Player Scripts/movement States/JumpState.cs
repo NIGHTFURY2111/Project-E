@@ -39,10 +39,10 @@ public class JumpState : BaseState
             SwitchState(factory.Fall());
         }
         //jump into another jump
-        if (ctx.jumpInput.WasPressedThisFrame())
-        {
-            SwitchState(factory.Jump());
-        }
+        //if (ctx.jumpInput.WasPressedThisFrame())
+        //{
+        //    SwitchState(factory.Jump());
+        //}
 
         //dash
         if (ctx.dashInput.WasPressedThisFrame())

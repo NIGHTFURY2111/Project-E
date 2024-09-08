@@ -8,25 +8,6 @@ public class FallState : BaseState
     {
     }
 
-    public override void CheckSwitchState()
-    {
-        if (ctx.isGrounded)
-        {
-            SwitchState(factory.Idle());
-        }
-
-        if (ctx.jumpInput.WasPressedThisFrame())
-        {
-            SwitchState(factory.Jump());
-        }
-
-        //dash
-        if (ctx.dashInput.WasPressedThisFrame())
-        {
-            SwitchState(factory.Dash());
-        }
-
-    }
 
     public override void EnterState()
     {
@@ -39,5 +20,31 @@ public class FallState : BaseState
     public override void UpdateState()
     {
         CheckSwitchState();
+    }
+    public override void CheckSwitchState()
+    {
+        if (ctx.isGrounded)
+        {
+            SwitchState(factory.Idle());
+        }
+
+        //if (ctx.jumpInput.WasPressedThisFrame())
+        //{
+        //    SwitchState(factory.Jump());
+        //}
+
+        //dash
+        if (ctx.dashInput.WasPressedThisFrame())
+        {
+            SwitchState(factory.Dash());
+        }
+
+
+        if (ctx.touchingWall)
+        {
+            SwitchState(factory.WallSlide());
+            
+        }
+
     }
 }

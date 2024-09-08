@@ -22,8 +22,15 @@ public class IdleState : BaseState
     }
 
     public override void CheckSwitchState()
-    {//move jump
+    {//move jump //dash //fall
         
+        
+        //fall
+        if (!ctx.isGrounded)
+        {
+            SwitchState(factory.Fall());
+        }
+
         //move
         if (ctx.moveInput.IsInProgress())
         {

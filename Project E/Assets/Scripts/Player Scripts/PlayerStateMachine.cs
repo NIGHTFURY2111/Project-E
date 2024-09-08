@@ -53,12 +53,21 @@ public class PlayerStateMachine : MonoBehaviour
         public int jumpsLeft;
         public bool isJumping = false;
     }
+
+
+    [System.Serializable]
+    public class WallSettings
+    {
+        public float wallJumpForce;
+        public float wallGravityClamp;
+    }
     #endregion
 
     [SerializeField] GeneralSettings generalSettings;
     [SerializeField] MovementSettings movementSettings;
     [SerializeField] DashSettings dashSettings;
     [SerializeField] JumpSettings jumpSettings;
+    [SerializeField] WallSettings wallSettings;
     //[SerializeField] IceSettings iceSettings;
     //[SerializeField] WallSettings wallSettings;
     //[SerializeField] RespawnSettings respawnSettings;
@@ -73,8 +82,10 @@ public class PlayerStateMachine : MonoBehaviour
     Vector2 _moveDirection = Vector2.zero;
     public float gravity;
     float distanceToGround;
+    float distanceToWall;
     public event Action<bool> PlayerGroundedEvent;
     public event Action<bool> playerWallEvent;
+   
 
 
     #region necessary input system calls
@@ -86,6 +97,8 @@ public class PlayerStateMachine : MonoBehaviour
         capsuleCollider= GetComponent<CapsuleCollider2D>();
 
         generalSettings.playerMovement = new();
+
+        _currentState = stateFactory.Idle();
 
         _move = generalSettings.playerMovement.Player.Move;
         _jump = generalSettings.playerMovement.Player.Jump;
@@ -114,16 +127,16 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Start()
     {
-
         PlayerGroundedEvent += OnGroundCheck;
+        playerWallEvent += OnWallCheck;
         gravity = movementSettings.playerGravity;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        _currentState = stateFactory.Idle();
         _currentState.EnterState();
 
         //calculating the distance to ground cuz local scale n capsule collider are both lying (something about vectors n all that)
         distanceToGround = capsuleCollider.size.y * transform.localScale.y / 2; 
+        distanceToWall = capsuleCollider.size.x * transform.localScale.x / 2;
     }
 
     void Update()
@@ -151,7 +164,10 @@ public class PlayerStateMachine : MonoBehaviour
     private void FlipCheck()
     {
         float movementSpeed = rb.velocity.x;
-        if ((movementSettings.isFacingRight && movementSpeed < 0f )|| (!movementSettings.isFacingRight && movementSpeed > 0f))
+        float Playerinput = moveInput.ReadValue<Vector2>().x;
+
+        //if ((movementSettings.isFacingRight && movementSpeed < 0f )|| (!movementSettings.isFacingRight && movementSpeed > 0f))
+        if ((movementSettings.isFacingRight && movementSpeed < 0f && Playerinput <0) || (!movementSettings.isFacingRight && movementSpeed > 0f && Playerinput > 0))
         {
             Flip();
         }
@@ -187,15 +203,21 @@ public class PlayerStateMachine : MonoBehaviour
     {
         //raycsast for ground check
         PlayerGroundedEvent?.Invoke(Physics2D.Raycast(transform.position, Vector2.down, distanceToGround + 0.1f, generalSettings.groundLayer));
-        Debug.DrawLine(transform.position, new Vector2(transform.position.x,transform.position.y- distanceToGround + 0.1f),Color.red);
+        //Debug.DrawLine(transform.position, new Vector2(transform.position.x,transform.position.y- distanceToGround + 0.1f),Color.red);
 
         // raycast for wall Check
-
+        playerWallEvent?.Invoke(Physics2D.Raycast(transform.position, (movementSettings.isFacingRight ? Vector2.right:Vector2.left), distanceToWall + 0.5f, generalSettings.groundLayer));
+        Debug.Log((bool)Physics2D.Raycast(transform.position, (movementSettings.isFacingRight ? Vector2.right:Vector2.left), distanceToWall + 0.5f, generalSettings.groundLayer)+"    "+touchingWall);
+        Debug.DrawLine(transform.position, new Vector2(transform.position.x + ((movementSettings.isFacingRight ? 1 : -1) * (distanceToWall + 0.5f)), transform.position.y), Color.blue);
     }
 
     private void OnGroundCheck(bool IsGrounded)
     {
         isGrounded = IsGrounded;
+    }
+    private void OnWallCheck(bool TouchingWall)
+    {
+        touchingWall = TouchingWall;
     }
 
 
@@ -212,6 +234,8 @@ public class PlayerStateMachine : MonoBehaviour
     public float jumpGravity { get => jumpSettings.jumpGravity; }
     public float dashGravity { get => dashSettings.dashGravity; }
     public float normalGravity { get => movementSettings.playerGravity; }
+    public float setGravityClamp { get => generalSettings.maxFallingVelocity; set=> generalSettings.maxFallingVelocity = value; }
+    public float wallGravityClamp { get => wallSettings.wallGravityClamp; }
     //public float currentGravity { get => movementSettings.playerGravity; set => movementSettings.playerGravity = value; }
     public BaseState currentState { get => _currentState; set => _currentState = value; }
     public InputAction moveInput { get=>_move; set => _move = value; }
@@ -219,6 +243,7 @@ public class PlayerStateMachine : MonoBehaviour
     public InputAction dashInput { get=>_dash; set => _dash = value; }
 
     public bool isGrounded { get; private set; }
+    public bool touchingWall { get; private set; }
 
     #endregion
 }

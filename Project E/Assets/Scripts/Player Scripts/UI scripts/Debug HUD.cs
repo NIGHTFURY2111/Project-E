@@ -9,9 +9,9 @@ public class DebugUI : MonoBehaviour
     [SerializeField] Transform canvas;
     List<TextMeshProUGUI> ui_elements = new();
     PlayerStateMachine psm;
-    string currentState = null;
-    string lastState = null;
-    string lasterState = null;
+    string currentState = "first state";
+    string lastState = "second state";
+    string lasterState = "third state";
     void Start()
     {
         foreach (Transform t in canvas)

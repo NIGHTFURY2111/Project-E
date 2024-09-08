@@ -6,6 +6,7 @@ public class StateFactory
     MoveState moveState;
     FallState fallState;
     DashState dashState;
+    WallSlideState wallSlideState;
     //SlideState slideState;
     //WallSlideState wallSlideState;
     //WallJumpState wallJumpState;
@@ -22,6 +23,7 @@ public class StateFactory
         moveState = new MoveState(_context, this);
         fallState = new FallState(_context, this);
         dashState = new DashState(_context, this);
+        wallSlideState = new WallSlideState(_context, this);
 
         //slideState = new SlideState(_context, this);
         //wallJumpState = new WallJumpState(_context, this);
@@ -53,6 +55,11 @@ public class StateFactory
     public BaseState Fall()
     {
         return fallState;
+    }
+
+    public BaseState WallSlide()
+    {
+        return wallSlideState;
     }
     //public BaseState Slide()
     //{
