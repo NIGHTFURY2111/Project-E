@@ -95,6 +95,8 @@ public class Movement : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         jumpsLeft = extraJumps;
         rb.gravityScale *= normalCharGravity;
@@ -203,7 +205,7 @@ public class Movement : MonoBehaviour
                     break;
 
                 default:
-                    rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y).PixelPerfect();
+                    rb.velocity = new Vector2(currentSpeed * PlayerInput().x, rb.velocity.y);
 
                     break;
             }
@@ -230,8 +232,8 @@ public class Movement : MonoBehaviour
             rb.velocity = Vector2.zero;
             rb.gravityScale = dashGravity;
             yield return new WaitForSecondsRealtime(0.05f);
-            rb.velocity = (PlayerInput() != Vector2.zero) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y * vertDashDamp).PixelPerfect() :
-                          new Vector2(dashSpeed * (transform.localScale.x / 4), 0).PixelPerfect();
+            rb.velocity = (PlayerInput() != Vector2.zero) ? new Vector2(dashSpeed * PlayerInput().x, dashSpeed * PlayerInput().y * vertDashDamp) :
+                          new Vector2(dashSpeed * (transform.localScale.x / 4), 0);
 
             yield return new WaitForSecondsRealtime(dashTime);
 
@@ -250,7 +252,7 @@ public class Movement : MonoBehaviour
             Flip();
             rb.velocity = Vector2.zero;
             jumpsLeft = 0;
-            rb.velocity = new Vector2(wallJumpingPower.x * (transform.localScale.x / 4), wallJumpingPower.y).PixelPerfect();
+            rb.velocity = new Vector2(wallJumpingPower.x * (transform.localScale.x / 4), wallJumpingPower.y);
             yield return new WaitForSecondsRealtime(wallJumpingTime);
             isWallJumping = false;
         }

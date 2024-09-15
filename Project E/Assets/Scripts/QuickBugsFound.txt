@@ -1,0 +1,1 @@
+movementInput includes W and S too so pressing them puts the player in move state,(this is a problem cuz it resets the gravity when falling for some reason)
