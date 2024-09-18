@@ -49,7 +49,7 @@ We welcome contributions from the community to make Project-E even more exciting
 Project-E is brought to you by the following contributors:
 
 - Ardenbruh - [GitHub Profile](https://github.com/Ardenbruh)
-- qutbuddin111 - [GitHub Profile](https://github.com/qutbuddin111)
+- qutwo - [GitHub Profile](https://github.com/qutwo)
 - RajasSamarth - [GitHub Profile](https://github.com/RajasSamarth)
 
 
