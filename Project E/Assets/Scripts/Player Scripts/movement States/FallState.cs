@@ -11,6 +11,8 @@ public class FallState : BaseState
 
     public override void EnterState()
     {
+        ctx.canAttack = false;
+
     }
 
     public override void ExitState()
@@ -19,7 +21,7 @@ public class FallState : BaseState
 
     public override void UpdateState()
     {
-        CheckSwitchState();
+        //CheckSwitchState();
     }
     public override void CheckSwitchState()
     {
@@ -46,5 +48,10 @@ public class FallState : BaseState
             
         }
 
+    }
+
+    public override bool SwitchCondintion()
+    {
+        return !ctx.isGrounded && ctx.moveDirectionY <= 0;
     }
 }

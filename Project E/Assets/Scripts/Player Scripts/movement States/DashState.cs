@@ -24,16 +24,18 @@ public class DashState : BaseState
     }
     public override void UpdateState()
     {
+
     }
 
     public override void ExitState()
     {
+
     }
 
-        IEnumerator Dash()
-        {
-            if (ctx.dashInput.WasPressedThisFrame())
-            {
+    IEnumerator Dash()
+    {
+           
+            
                 //Vector2 direction = move.ReadValue<Vector2>();
                 //Vector2 storing = rb.velocity;
 
@@ -47,7 +49,13 @@ public class DashState : BaseState
 
                 //rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, float.MinValue, vertMaxDash));
                 ctx.gravity = ctx.normalGravity;
-                CheckSwitchState();
-            }
-        }
+                
+            
+    }
+
+    public override bool SwitchCondintion()
+    {
+      
+        return ctx.dashInput.WasPressedThisFrame();
+    }
 }

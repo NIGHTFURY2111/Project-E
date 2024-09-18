@@ -18,7 +18,7 @@ public class MoveState : BaseState
 
         outputVector = ctx.playerInput * ctx.playerMoveSpeed;
         ctx.moveDirectionX = outputVector.x;
-        CheckSwitchState();
+        //CheckSwitchState();
     }
 
     public override void ExitState()
@@ -46,5 +46,10 @@ public class MoveState : BaseState
         {
             SwitchState(factory.Dash());
         }
+    }
+
+    public override bool SwitchCondintion()
+    {
+        return ctx.isGrounded && ctx.moveInput.IsInProgress();
     }
 }

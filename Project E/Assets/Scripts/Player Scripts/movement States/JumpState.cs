@@ -15,6 +15,8 @@ public class JumpState : BaseState
         ctx.gravity = 0;
         ctx.moveDirectionY += ctx.playerJumpingForce;
         ctx.gravity = ctx.jumpGravity;
+        ctx.canAttack = false;
+
     }
 
     public override void UpdateState()
@@ -22,7 +24,7 @@ public class JumpState : BaseState
         //dynamic height for jumps
         ctx.gravity = (ctx.jumpInput.IsInProgress()) ? ctx.jumpGravity : ctx.normalGravity;
 
-        CheckSwitchState();
+        //CheckSwitchState();
     }
 
     public override void ExitState()
@@ -52,4 +54,8 @@ public class JumpState : BaseState
 
     }
 
+    public override bool SwitchCondintion()
+    {
+        return ctx.isGrounded && ctx.jumpInput.WasPressedThisFrame();
+    }
 }

@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class IdleState : BaseState
 {
+    
     public IdleState(PlayerStateMachine ctx, StateFactory factory) : base(ctx, factory)
     {
+        
     }
 
     public override void EnterState()
     {
         ctx.moveDirectionX = 0f;
         ctx.moveDirectionY = 0f;
+        ctx.canAttack = true;
     }
     public override void UpdateState()
     {
-        CheckSwitchState();
+        //CheckSwitchState();
     }
     public override void ExitState()
     {
@@ -49,5 +52,10 @@ public class IdleState : BaseState
             SwitchState(factory.Dash());
         }
 
+    }
+
+    public override bool SwitchCondintion()
+    {
+       return ctx.isGrounded && !ctx.moveInput.IsInProgress();
     }
 }

@@ -11,10 +11,10 @@ public class falling_object : MonoBehaviour
     [SerializeField] private LayerMask player;
     [SerializeField] private Transform rayCasts;
     [SerializeField] private float raylenght;
-    private Movement PlayerScript;
+    //private Movement PlayerScript;
     private void Start()
     {
-        PlayerScript = GameObject.FindWithTag("Player").GetComponent<Movement>();
+        //PlayerScript = GameObject.FindWithTag("Player").GetComponent<Movement>();
 
     }
    
@@ -38,8 +38,8 @@ public class falling_object : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("Player"))
-             PlayerScript.Respawn();
+        //if(collision.CompareTag("Player"))
+        //     PlayerScript.Respawn();
 
     }
     private void OnDrawGizmos()

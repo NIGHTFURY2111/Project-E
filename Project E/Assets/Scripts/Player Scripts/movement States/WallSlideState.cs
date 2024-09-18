@@ -17,7 +17,7 @@ public class WallSlideState : BaseState
 
     public override void UpdateState()
     {
-        CheckSwitchState();
+        //CheckSwitchState();
     }
 
     public override void ExitState()
@@ -44,5 +44,10 @@ public class WallSlideState : BaseState
         //{
 
         //}
+    }
+
+    public override bool SwitchCondintion()
+    {
+        return !ctx.isGrounded && ctx.touchingWall;
     }
 }

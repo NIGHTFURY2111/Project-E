@@ -62,7 +62,7 @@ public class PlayerStateMachine : MonoBehaviour
         public float wallGravityClamp;
     }
     #endregion
-
+    
     [SerializeField] GeneralSettings generalSettings;
     [SerializeField] MovementSettings movementSettings;
     [SerializeField] DashSettings dashSettings;
@@ -71,20 +71,22 @@ public class PlayerStateMachine : MonoBehaviour
     //[SerializeField] IceSettings iceSettings;
     //[SerializeField] WallSettings wallSettings;
     //[SerializeField] RespawnSettings respawnSettings;
-    StateFactory stateFactory;
+    [SerializeReferenceDropdown]
+    [SerializeReference]public StateFactory stateFactory;
     BaseState _currentState;
     CapsuleCollider2D capsuleCollider;
     Rigidbody2D rb;
     InputAction _move;
     InputAction _jump;
     InputAction _dash;
-    InputAction grab;
+    InputAction _fire;
     Vector2 _moveDirection = Vector2.zero;
     public float gravity;
     float distanceToGround;
     float distanceToWall;
     public event Action<bool> PlayerGroundedEvent;
     public event Action<bool> playerWallEvent;
+    public bool canAttack;
    
 
 
@@ -92,18 +94,19 @@ public class PlayerStateMachine : MonoBehaviour
     private void Awake()
     {
 
-        stateFactory = new StateFactory(this);
+        //stateFactory = new StateFactory(this);
         rb= GetComponent<Rigidbody2D>();
         capsuleCollider= GetComponent<CapsuleCollider2D>();
-
+        //stateFactory = new StateFactory(this);
+        Debug.Log(stateFactory);
         generalSettings.playerMovement = new();
-
+        
         _currentState = stateFactory.Idle();
 
         _move = generalSettings.playerMovement.Player.Move;
         _jump = generalSettings.playerMovement.Player.Jump;
         _dash = generalSettings.playerMovement.Player.Dash;
-        grab = generalSettings.playerMovement.Player.Grab;
+        _fire = generalSettings.playerMovement.Player.Fire;
 
     }
     private void OnEnable()
@@ -111,7 +114,7 @@ public class PlayerStateMachine : MonoBehaviour
         _move.Enable();
         _jump.Enable();
         _dash.Enable();
-        grab.Enable();
+        _fire.Enable();
     }
 
 
@@ -120,7 +123,7 @@ public class PlayerStateMachine : MonoBehaviour
         _move.Disable();
         _jump.Disable();
         _dash.Disable();
-        grab.Disable();
+        _fire.Disable();
     }
 
     #endregion
@@ -132,7 +135,7 @@ public class PlayerStateMachine : MonoBehaviour
         gravity = movementSettings.playerGravity;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        _currentState.EnterState();
+        //_currentState.EnterState();
 
         //calculating the distance to ground cuz local scale n capsule collider are both lying (something about vectors n all that)
         distanceToGround = capsuleCollider.size.y * transform.localScale.y / 2; 
@@ -143,16 +146,17 @@ public class PlayerStateMachine : MonoBehaviour
     {
         FlipCheck();
         //CheckRespawn();
-        _currentState.UpdateState();
+        stateFactory.update();
 
         RayCasts();
+        attack();
 
     }
 
 
     private void FixedUpdate()
     {
-        _currentState.FixedUpdate();
+        stateFactory.fixedUpdate();
         Artificialgravity();
         rb.velocity = _moveDirection;
     }
@@ -218,6 +222,14 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnWallCheck(bool TouchingWall)
     {
         touchingWall = TouchingWall;
+    }
+    
+    void attack()
+    {
+        if(canAttack && _fire.WasPressedThisFrame())
+        {
+            Debug.Log("attack");
+        }
     }
 
 

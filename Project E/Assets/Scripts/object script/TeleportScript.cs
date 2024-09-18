@@ -9,16 +9,16 @@ public class TeleportScript : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter = gameObject;
+            //GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter = gameObject;
         }
         
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter == gameObject)
-        {
-            GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter = null;
-        }
+        //if (collision.CompareTag("Player") && GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter == gameObject)
+        //{
+        //    GameObject.FindWithTag("Player").GetComponent<Movement>().currentTeleporter = null;
+        //}
     }
 }

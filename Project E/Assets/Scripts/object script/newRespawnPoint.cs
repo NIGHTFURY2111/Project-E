@@ -7,6 +7,6 @@ public class NewRespawnPoint : MonoBehaviour
 {
     void OnTriggerEnter2D(Collider2D collision)
     {
-        GameObject.FindWithTag("Player").GetComponent<Movement>().RespawnPoint = gameObject;
+        //GameObject.FindWithTag("Player").GetComponent<Movement>().RespawnPoint = gameObject;
     }
 }
