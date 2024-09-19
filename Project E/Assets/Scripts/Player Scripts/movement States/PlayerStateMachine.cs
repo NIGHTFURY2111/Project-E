@@ -68,9 +68,6 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] DashSettings dashSettings;
     [SerializeField] JumpSettings jumpSettings;
     [SerializeField] WallSettings wallSettings;
-    //[SerializeField] IceSettings iceSettings;
-    //[SerializeField] WallSettings wallSettings;
-    //[SerializeField] RespawnSettings respawnSettings;
     [SerializeReferenceDropdown]
     [SerializeReference]public StateFactory stateFactory;
     BaseState _currentState;
@@ -94,14 +91,11 @@ public class PlayerStateMachine : MonoBehaviour
     private void Awake()
     {
 
-        //stateFactory = new StateFactory(this);
+       
         rb= GetComponent<Rigidbody2D>();
         capsuleCollider= GetComponent<CapsuleCollider2D>();
-        //stateFactory = new StateFactory(this);
-        Debug.Log(stateFactory);
+        stateFactory.setPrerequisites();
         generalSettings.playerMovement = new();
-        
-        _currentState = stateFactory.Idle();
 
         _move = generalSettings.playerMovement.Player.Move;
         _jump = generalSettings.playerMovement.Player.Jump;
@@ -135,7 +129,7 @@ public class PlayerStateMachine : MonoBehaviour
         gravity = movementSettings.playerGravity;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        //_currentState.EnterState();
+      
 
         //calculating the distance to ground cuz local scale n capsule collider are both lying (something about vectors n all that)
         distanceToGround = capsuleCollider.size.y * transform.localScale.y / 2; 
@@ -145,7 +139,7 @@ public class PlayerStateMachine : MonoBehaviour
     void Update()
     {
         FlipCheck();
-        //CheckRespawn();
+     
         stateFactory.update();
 
         RayCasts();

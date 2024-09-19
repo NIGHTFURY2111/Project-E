@@ -415,6 +415,7 @@ MonoBehaviour:
     - rid: 364711704174264327
       type: {class: test, ns: , asm: Assembly-CSharp}
       data:
+        _context: {fileID: 449421761}
         stateholders:
         - state:
             rid: 364711704174264334
@@ -430,10 +431,11 @@ MonoBehaviour:
           stateEnum: 1
         - state:
             rid: 364711704174264338
-          stateEnum: 0
+          stateEnum: 16
         - state:
             rid: 364711704174264339
-          stateEnum: 0
+          stateEnum: 32
+        initial: 1
     - rid: 364711704174264334
       type: {class: FallState, ns: , asm: Assembly-CSharp}
       data:
@@ -453,11 +455,11 @@ MonoBehaviour:
     - rid: 364711704174264338
       type: {class: DashState, ns: , asm: Assembly-CSharp}
       data:
-        next: 0
+        next: 1
     - rid: 364711704174264339
       type: {class: WallSlideState, ns: , asm: Assembly-CSharp}
       data:
-        next: 0
+        next: 1
 --- !u!50 &449421762
 Rigidbody2D:
   serializedVersion: 4

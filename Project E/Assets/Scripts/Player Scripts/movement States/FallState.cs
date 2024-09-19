@@ -23,32 +23,7 @@ public class FallState : BaseState
     {
         //CheckSwitchState();
     }
-    public override void CheckSwitchState()
-    {
-        if (ctx.isGrounded)
-        {
-            SwitchState(factory.Idle());
-        }
-
-        //if (ctx.jumpInput.WasPressedThisFrame())
-        //{
-        //    SwitchState(factory.Jump());
-        //}
-
-        //dash
-        if (ctx.dashInput.WasPressedThisFrame())
-        {
-            SwitchState(factory.Dash());
-        }
-
-
-        if (ctx.touchingWall)
-        {
-            SwitchState(factory.WallSlide());
-            
-        }
-
-    }
+   
 
     public override bool SwitchCondintion()
     {

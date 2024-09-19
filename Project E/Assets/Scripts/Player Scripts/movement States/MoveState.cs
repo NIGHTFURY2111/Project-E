@@ -26,28 +26,7 @@ public class MoveState : BaseState
 
     }
 
-    public override void CheckSwitchState()
-    {//idle jump
-
-        //idle
-        if (ctx.moveInput.WasReleasedThisFrame())
-        {
-            SwitchState(factory.Idle());
-        }
-
-        //jump
-        if (ctx.jumpInput.WasPressedThisFrame())
-        {
-            SwitchState(factory.Jump());
-        }
-
-        //dash
-        if (ctx.dashInput.WasPressedThisFrame())
-        {
-            SwitchState(factory.Dash());
-        }
-    }
-
+    
     public override bool SwitchCondintion()
     {
         return ctx.isGrounded && ctx.moveInput.IsInProgress();

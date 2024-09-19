@@ -32,27 +32,7 @@ public class JumpState : BaseState
         ctx.gravity = ctx.normalGravity;
     }
 
-    public override void CheckSwitchState()
-    {//fall
-
-        //fall
-        if (ctx.moveDirectionY <= 0)
-        {
-            SwitchState(factory.Fall());
-        }
-        //jump into another jump
-        //if (ctx.jumpInput.WasPressedThisFrame())
-        //{
-        //    SwitchState(factory.Jump());
-        //}
-
-        //dash
-        if (ctx.dashInput.WasPressedThisFrame())
-        {
-            SwitchState(factory.Dash());
-        }
-
-    }
+  
 
     public override bool SwitchCondintion()
     {

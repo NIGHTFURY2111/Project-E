@@ -20,18 +20,18 @@ public class DebugUI : MonoBehaviour
 
         }
         sf = GetComponent<PlayerStateMachine>().stateFactory;
-        currentState = sf.currentState.ToString();
+        currentState = sf._currentState.ToString();
     }
 
 
     // Update is called once per frame
     void LateUpdate()
     {
-        if (currentState != sf.currentState.ToString())
+        if (currentState != sf._currentState.ToString())
         {
             lasterState = lastState;
             lastState = currentState;
-            currentState = sf.currentState.ToString();
+            currentState = sf._currentState.ToString();
         }
         //ui_elements[0].text = (psm._getPCC.GetCurrentHorizontal()).ToString();
 

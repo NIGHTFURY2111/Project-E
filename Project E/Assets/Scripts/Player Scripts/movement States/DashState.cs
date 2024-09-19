@@ -11,11 +11,7 @@ public class DashState : BaseState
     {
     }
 
-    public override void CheckSwitchState()
-    {
-        SwitchState(factory.Idle());
-    }
-
+   
     public override void EnterState()
     {
         

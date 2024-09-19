@@ -25,26 +25,7 @@ public class WallSlideState : BaseState
         ctx.setGravityClamp = normalClampValue;
     }
 
-    public override void CheckSwitchState()
-    {
-        //idle
-        if (ctx.isGrounded)
-        {
-            SwitchState(factory.Idle());
-        }
-
-        //fall
-        if (!ctx.touchingWall)
-        {
-            SwitchState(factory.Fall());
-        }
-
-        ////wallJump
-        //if (ctx.jumpInput.WasPressedThisFrame())
-        //{
-
-        //}
-    }
+   
 
     public override bool SwitchCondintion()
     {
